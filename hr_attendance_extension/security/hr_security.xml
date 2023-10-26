@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data noupdate="1">
+    <record id="hr_attendance_user_access_rule" model="ir.rule">
+        <field name="name">Attendance User Access</field>
+        <field name="model_id" ref="hr_attendance_extension.model_hr_fingerprint_attendance"/>
+        <field name="domain_force">[('employee.user_id','=',user.id)]</field>
+        <field name="groups" eval="[(4,ref('base.group_user'))]"/>
+    </record>
+    <record id="hr_attendance_officer_access_rule" model="ir.rule">
+        <field name="name">Attendance Officer Access</field>
+        <field name="model_id" ref="hr_attendance_extension.model_hr_fingerprint_attendance"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4,ref('base.group_hr_user'))]"/>
+    </record>
+</data>
+</openerp>

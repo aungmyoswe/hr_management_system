@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="hr_contract_view_form" model="ir.ui.view">
+            <field name="name">hr.contract.view.form.contract_init</field>
+            <field name="model">hr.contract</field>
+            <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+            <field name="arch" type="xml">
+            	<xpath expr="//field[@name='wage']" position="after">
+                    <field name="previous_wage" attrs="{'invisible': [('is_above_supervisor','=', False)]}" />
+                    <field name="year_end_increment" attrs="{'invisible': [('is_above_supervisor','=', False)]}"/>
+                    <field name="specail_allowance" attrs="{'invisible': [('is_above_supervisor','=', False)]}"/>
+                    <field name="insurance_amount" attrs="{'invisible': [('is_above_supervisor','=', False)]}"/>
+                    <field name="payment_type"/>
+                </xpath>
+                <xpath expr="//field[@name='employee_id']" position="attributes">
+                    <attribute name="options">{'create':false, 'create_edit':false}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='job_id']" position="attributes">
+                    <attribute name="options">{'create':false, 'create_edit':false}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='job_id']" position="after">
+                    <field name="department_id" options="{'create':false, 'create_edit':false}" required="1"/>
+                    <field name="section_id" />
+                    <field name="sub_section_id" />
+                    <field name="shift_type" options="{'create':false, 'create_edit':false}" required="1"/>
+                    <!-- <field name="sub_shift_type"/> -->
+                    <!-- <field name="show_shift_group" invisible="1"/> -->
+                    <field name="office_time" options="{'create':false, 'create_edit':false}"/>
+                    <!-- attrs="{'required':[('show_shift_group','!=',False)],'invisible':[('show_shift_group','=',False)]}" -->
+                </xpath>
+                <xpath expr="//field[@name='type_id']" position="after">
+                    <field name="is_permanent" />
+                        <field name="permanent_date" />
+                </xpath>
+                <!-- 20180124, thurein soe, rename lable for trial date start, start -->
+                <xpath expr="//label[@for='trial_date_start']" position="attributes">
+                    <attribute name="string">Probation Start</attribute>
+                </xpath>
+                <!-- 20180124, thurein soe, rename lable for trial date start, start -->
+            </field>
+        </record>  
+
+        <record id="hr_hr_employee_view_form2_inh" model="ir.ui.view">
+            <field name="name">hr.hr.employee.view.form2.inh</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr_contract.hr_hr_employee_view_form2"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='%(hr_contract.act_hr_employee_2_hr_contract)d']" position="replace">
+                    <button name="%(hr_contract.act_hr_employee_2_hr_contract)d" 
+                            class="oe_stat_button" 
+                            icon="fa-book" 
+                            type="action"
+                            groups="base.group_hr_user">
+                            <field name="contract_count" widget="statinfo" string="Contracts"/>
+                    </button>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- <record id="view_contract_filter_inherit" model="ir.ui.view">
+            <field name="name">Contract Filter Inheritance</field>
+            <field name="model">hr.contract</field>
+            <field name="inherit_id" ref="hr_contract.hr_contract_view_search"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[@string='Group By']" position='before'>
+                    <filter string="My Contract" name="my_profile" domain="[('employee_id.user_id','=', uid)]" help="My Contract Information"/>
+                </xpath>
+            </field>
+        </record> -->
+
+        <record id="hr_contract.action_hr_contract" model="ir.actions.act_window">
+            <field name="name">Contracts</field>
+            <field name="res_model">hr.contract</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[]</field>
+            <field name="search_view_id" ref="hr_contract.hr_contract_view_search"/>
+        </record>
+        <!-- <field name="context">{'search_default_current':1,'search_default_my_profile': 1,}</field> -->
+
+        <menuitem action="hr_contract.action_hr_contract" id="hr_contract.hr_menu_contract" parent="hr.menu_hr_main" name="Contracts" sequence="4" groups="base.group_user"/>      
+    </data>
+</openerp>

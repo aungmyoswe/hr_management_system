@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record id="view_hr_employee_grade_form_inh" model="ir.ui.view">
+            <field name="name">hr.payroll.structure.inherit</field>
+            <field name="model">hr.payroll.structure</field>
+            <field name="inherit_id" ref="hr_payroll.view_hr_employee_grade_form"/>
+            <field name="arch" type="xml">
+                <field name="parent_id" position="after">
+                    <field name="parent_department_id" widget="many2many_tags"/>
+                    <field name="department_id"/>
+                </field>
+            </field>
+        </record>
+        
+        <record id="view_hr_payslip_filter_inherit" model="ir.ui.view">
+            <field name="name">hr.payslip.filter.inherit</field>
+            <field name="model">hr.payslip</field>
+            <field name="inherit_id" ref="hr_payroll.view_hr_payslip_filter"/>
+            <field name="arch" type="xml">
+                <field name="employee_id" position="after">
+                <!-- <field expr="//filter[@string='States']" position="after"> -->
+                    <filter string="Parent Department" icon="terp-personal" context="{'group_by':'parent_department_id'}"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="view_users_form_inherit" model="ir.ui.view">
+            <field name="name">res.users.inherit</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="base.view_users_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="is_finance_user"/>
+                    <field name="is_finance_manager"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="hr_contract_view_form" model="ir.ui.view">
+            <field name="name">hr.contract.view.form.inh</field>
+            <field name="model">hr.contract</field>
+            <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='year_end_increment']" position="after">
+                    <field name="is_hr_manager" invisible="1"/>
+                    <field name="is_above_supervisor" invisible="1"/>
+                    <field name="ot_rate" attrs="{'invisible': [('is_above_supervisor','=', False)]}"/>
+                    <field name="month_allowance" attrs="{'invisible': [('is_above_supervisor','=', False)]}"/>
+                    <field name="year_allowance" attrs="{'invisible': [('is_above_supervisor','=', False)]}"/>
+                    <field name="cold_room_allowance" attrs="{'invisible': [('is_above_supervisor','=', False)]}"/>
+                </xpath>
+
+                <xpath expr="//field[@name='payment_type']" position="after">
+                    <field name="is_ssb" attrs="{'invisible': [('is_above_supervisor','=', False)]}"/>
+                    <field name="is_cycle_using" attrs="{'invisible': [('is_above_supervisor','=', False)]}"/>
+                    <field name="is_outbound" attrs="{'invisible': [('is_above_supervisor','=', False)]}"/>
+                    <field name="is_travel_allowance" attrs="{'invisible': [('is_above_supervisor','=', False)]}"/>
+                </xpath>
+
+                <xpath expr="//field[@name='wage']" position="attributes">
+                    <attribute name="attrs">{'invisible': [('is_above_supervisor','=', False)]}</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_hr_payslip_form_inherit" model="ir.ui.view">
+            <field name="name">hr.payslip.form.inherit</field>
+            <field name="model">hr.payslip</field>
+            <field name="inherit_id" ref="hr_payroll.view_hr_payslip_form"/>
+            <field name="arch" type="xml">
+                    <xpath expr="//button[@string='Confirm']" position="attributes">
+                        <attribute name="groups">base.group_hr_manager</attribute>
+                    </xpath>
+                    <xpath expr="//button[@string='Refund']" position="attributes">
+                        <attribute name="groups">base.group_hr_manager</attribute>
+                    </xpath>
+                    <xpath expr="//button[@string='Set to Draft']" position="attributes">
+                        <attribute name="groups">base.group_hr_manager</attribute>
+                    </xpath>
+                    <xpath expr="//button[@string='Cancel Payslip']" position="attributes">
+                        <attribute name="groups">base.group_hr_manager</attribute>
+                    </xpath>
+                    <xpath expr="//button[@string='Compute Sheet']" position="attributes">
+                        <attribute name="groups">base.group_hr_manager</attribute>
+                    </xpath>
+            </field>
+        </record>
+
+        <!-- Payroll Input -->
+
+        <record id="view_payroll_record_import_form" model="ir.ui.view">
+            <field name="name">Payroll Import Form</field>
+            <field name="model">data_import.payroll</field>
+            <field name="arch" type="xml">
+                <form string="Payroll Record Import" version="7.0">
+                    <header>
+                        <button name="import_data_by_amount" string="Import Amount" type="object"
+                            class="oe_highlight" />
+                        <field name="state" widget="statusbar" statusbar_visible="draft,completed,error" />
+                    </header>
+                    <sheet>
+                        <group>
+                            <field name="name" />
+                            <field name="payslip_run" />
+                            <field name="import_date" />
+                            <field name="import_file" filename="import_fname"/>
+                            <field name="import_fname" invisible="1" class="oe_inline oe_right" />
+                            <field name="company_id" />
+                            <field name="note" />
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>       
+
+        <record id="view_payroll_record_import_tree" model="ir.ui.view">
+            <field name="name">Payroll Import Tree</field>
+            <field name="model">data_import.payroll</field>
+            <field name="arch" type="xml">
+                <tree string="Payroll Amount Import">
+                    <field name="import_date" />
+                    <field name="name" />
+                    <field name="import_fname" />
+                    <field name="note" />
+                    <field name="company_id" />
+                    <field name="state" />
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_payroll_record_filter" model="ir.ui.view">
+            <field name="name">Payroll Amount Import Filter</field>
+            <field name="model">data_import.payroll</field>
+            <field name="arch" type="xml">
+                <search string="Payroll Import Filter">
+                    <group expand="0" string="Group By">
+                        <filter string="Payslips Batches" icon="terp-personal" domain="[]" context="{'group_by':'payslip_run'}" name="payslip_run"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_payroll_record_import" model="ir.actions.act_window">
+            <field name="name">Payroll Amount Import</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">data_import.payroll</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{
+                    'search_default_payslip_run': 1,
+                }
+            </field>
+            <field name="view_id" ref="view_payroll_record_import_tree" />
+        </record>
+
+        <!-- -->   
+
+        <record id="view_hr_payslip_form_inherit" model="ir.ui.view">
+            <field name="name">hr.payslip.form.inherit</field>
+            <field name="model">hr.payslip</field>
+            <field name="inherit_id" ref="hr_payroll.view_hr_payslip_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='date_from']" position="after">
+                    <field name="is_above_supervisor" invisible="1"/>
+                </xpath>
+                <xpath expr="//button[@class='oe_stat_button']" position="attributes">
+                    <attribute name="attrs">{'invisible': [('is_above_supervisor','=', False)]}</attribute>
+                </xpath>
+
+                <xpath expr="//page[@string='Worked Days &amp; Inputs']" position="attributes">
+                    <attribute name="attrs">{'invisible': [('is_above_supervisor','=', False)]}</attribute>
+                </xpath>
+                <xpath expr="//page[@string='Salary Computation']" position="attributes">
+                    <attribute name="attrs">{'invisible': [('is_above_supervisor','=', False)]}</attribute>
+                </xpath>
+                <xpath expr="//page[@string='Details By Salary Rule Category']" position="attributes">
+                    <attribute name="attrs">{'invisible': [('is_above_supervisor','=', False)]}</attribute>
+                </xpath>
+                <xpath expr="//page[@string='Accounting Information']" position="attributes">
+                    <attribute name="attrs">{'invisible': [('is_above_supervisor','=', False)]}</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- OT Input -->
+
+        <!-- <record id="view_ot_record_import_form" model="ir.ui.view">
+            <field name="name">OT Import Form</field>
+            <field name="model">data_import.ot</field>
+            <field name="arch" type="xml">
+                <form string="OT Record Import" version="7.0">
+                    <header>
+                        <button name="import_data_by_amount" string="Import Amount" type="object"
+                            class="oe_highlight" />
+                        <field name="state" widget="statusbar" statusbar_visible="draft,completed,error" />
+                    </header>
+                    <sheet>
+                        <group>
+                            <field name="name" />
+                            <field name="import_date" />
+                            <field name="import_file" filename="import_fname"
+                            />
+                            <field name="import_fname"/>
+                            <field name="company_id" />
+                            <field name="note" />
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>       
+
+        <record id="view_ot_record_import_tree" model="ir.ui.view">
+            <field name="name">OT Import Tree</field>
+            <field name="model">data_import.ot</field>
+            <field name="arch" type="xml">
+                <tree string="OT Amount Import">
+                    <field name="import_date" />
+                    <field name="name" />
+                    <field name="import_fname" />
+                    <field name="note" />
+                    <field name="company_id" />
+                    <field name="state" />
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_ot_record_import" model="ir.actions.act_window">
+            <field name="name">OT Amount Import</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">data_import.ot</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_ot_record_import_tree" />
+        </record>
+
+        <menuitem id="menu_ot_import_" name="OT/OD Import"
+            action="action_ot_record_import" parent="hr_payroll.menu_hr_root_payroll" sequence="17"/> -->
+
+        <!-- -->   
+
+        <menuitem id="menu_payroll_import_" name="Payslips Import"
+            action="action_payroll_record_import" parent="hr_payroll.menu_hr_root_payroll" sequence="16" groups="base.group_hr_manager"/>
+
+        <menuitem action="hr_payroll.action_view_hr_payslip_form" id="hr_payroll.menu_department_tree" parent="hr_payroll.menu_hr_root_payroll" groups="base.group_user"/>
+            
+    </data>
+</openerp>
+    

@@ -1,0 +1,16 @@
+.my_css_table {
+	width: 100%;
+}
+.my_css_table table {
+	
+}
+.my_css_table th, .my_css_table td {
+	text-align: center;
+	border: 1px solid black;
+	width: 20%;
+    padding: 2px;
+}
+.my_css_table span {
+	max-width: 75px;
+}
+

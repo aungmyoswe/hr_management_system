@@ -1,0 +1,264 @@
+<?xml version="1.0"?>
+<openerp>
+	<data>
+		<record model="ir.ui.view" id="crm_case_form_view_job_inherited">
+			<field name="name">Jobs - Recruitment Form</field>
+			<field name="model">hr.applicant</field>
+			<field name="inherit_id" ref="hr_recruitment.crm_case_form_view_job" />
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='user_id']" position="before">
+					<field name="inv_status"/>
+					<field name="first_date" />
+					<field name="second_date" attrs="{'invisible':[('stage_id','=',1)]}"/>
+					<field name="bg_check_date" attrs="{'invisible':[('stage_id','in',(1,2,3,10))]}"/>
+					<field name="medical_check_date" attrs="{'invisible':[('stage_id','in',(1,2,3,10))]}"/>
+					<field name="job_offer_date" attrs="{'invisible':[('stage_id','in',(1,2,3,8,10))]}"/>
+					<field name="acceptence_date" attrs="{'invisible':[('stage_id','in',(1,2,3,7,8,9,10))]}"/>
+					<field name="reject_date" attrs="{'invisible':[('stage_id','in',(1,2,3,7,8,9,4,10))]}"/>
+				</xpath>
+
+				<xpath expr="//div[@class='oe_title']" position="replace">
+					<div class="oe_title">
+						<label for="name" class="oe_edit_only"/>
+	                    <h1><field name="name"/></h1>
+
+	                    <label for="partner_name" class="oe_edit_only"/>
+	                    <h2 style="display: inline-block;">
+	                        <field name="partner_name" class="oe_inline" placeholder="English"/>
+	                    </h2>
+
+	                    <h2 style="display: inline-block;">
+	                        <field name="partner_burmese_name" class="oe_inline" placeholder="Burmese"/>
+	                        <button string="Create Employee" name="create_employee_from_applicant" type="object" class="oe_link oe_inline" style="margin-left: 8px;"
+	                    attrs="{'invisible': [('emp_id', '!=', False)]}"/>
+	                    </h2>
+					</div>
+				</xpath>
+
+				<xpath expr="//field[@name='user_id']" position="replace">
+
+				</xpath>
+
+				<xpath expr="//field[@name='partner_id']" position="replace">
+					<label for="township"/>
+                        <div>
+                        	<table>
+                        		<tr>
+                        		<td><field name="street" nolabel="1"/></td>
+								<td><field name="township" nolabel="1"/></td>
+								</tr>
+                        	</table>
+                        </div>
+				</xpath>
+				<xpath expr="//field[@name='email_from']" position="before">
+					<field name="nrc_number"/>
+				</xpath>
+				<sheet>
+					<xpath expr="//field[@name='description']" position="after">
+							<separator string="Working Experience"/>
+							<group>
+									<field name="working_experience" nolabel="1">
+										<tree editable="button">
+											<field name="company_name" string="Company Name" />
+											<field name="worked_post" string="Position" />
+											<field name="worked_duringtime" string="Duration" />
+											<field name="leave_information" string="Reason" />
+										</tree>
+									</field>
+								</group>
+
+						<field name="show_question_1" invisible="1"/>
+						<field name="show_question_1_1" invisible="1"/>
+						<field name="show_question_2" invisible="1"/>
+						<field name="show_question_2_1" invisible="1"/>
+						<field name="show_question_3" invisible="1"/>
+						<field name="show_question_3_1" invisible="1"/>
+						<field name="show_question_4" invisible="1"/>
+						<field name="show_question_4_1" invisible="1"/>
+						<field name="show_question_5" invisible="1"/>
+						<field name="show_question_5_1" invisible="1"/>
+						<field name="show_question_6" invisible="1"/>
+						<field name="show_question_6_1" invisible="1"/>
+						<field name="show_question_7" invisible="1"/>
+						<field name="show_question_7_1" invisible="1"/>
+						<field name="show_question_8" invisible="1"/>
+						<field name="show_question_8_1" invisible="1"/>
+						<field name="show_question_9" invisible="1"/>
+						<field name="show_question_9_1" invisible="1"/>
+						<field name="show_question_10" invisible="1"/>
+						<field name="show_question_10_1" invisible="1"/>
+
+						<notebook>
+							<page string="Question 1" attrs="{'invisible':[('show_question_1','=',False)]}"
+								groups="base.group_hr_user">
+							<field name="type_id1" class="font_size_class" readonly="True" />
+								<field name="question_line1_1" attrs="{'invisible':[('show_question_1_1','=',False)]}">
+									<tree editable="button">
+										<field name="question_id" string="Questions" />
+										<field name="answer" string="Answer"/>
+									</tree>
+								</field>
+							</page>
+							<page string="Question 2" attrs="{'invisible':[('show_question_2','=',False)]}"
+								groups="base.group_hr_user">
+							<field name="type_id2" class="font_size_class" readonly="True" />
+								<field name="question_line2_1" attrs="{'invisible':[('show_question_2_1','=',False)]}">
+									<tree editable="button">
+										<field name="question_id" string="Questions" />
+										<field name="answer" string="Answer"/>
+									</tree>
+								</field>
+							</page>
+							<page string="Question 3" attrs="{'invisible':[('show_question_3','=',False)]}"
+								groups="base.group_hr_user">
+							<field name="type_id3" class="font_size_class" readonly="True" />
+								<field name="question_line3_1" attrs="{'invisible':[('show_question_3_1','=',False)]}">
+									<tree editable="button">
+										<field name="question_id" string="Questions" />
+										<field name="answer" string="Answer"/>
+									</tree>
+								</field>
+							</page>
+							<page string="Question 4" attrs="{'invisible':[('show_question_4','=',False)]}"
+								groups="base.group_hr_user">
+							<field name="type_id4" class="font_size_class" readonly="True" />
+								<field name="question_line4_1" attrs="{'invisible':[('show_question_4_1','=',False)]}">
+									<tree editable="button">
+										<field name="question_id" string="Questions" />
+										<field name="answer" string="Answer"/>
+									</tree>
+								</field>
+							</page>
+							<page string="Question 5" attrs="{'invisible':[('show_question_5','=',False)]}"
+								groups="base.group_hr_user">
+							<field name="type_id5" class="font_size_class" readonly="True" />
+								<field name="question_line5_1" attrs="{'invisible':[('show_question_5_1','=',False)]}">
+									<tree editable="button">
+										<field name="question_id" string="Questions" />
+										<field name="answer" string="Answer"/>
+									</tree>
+								</field>
+							</page>
+							<page string="Question 6" attrs="{'invisible':[('show_question_7','=',False)]}"
+								groups="base.group_hr_user">
+							<field name="type_id7" class="font_size_class" readonly="True" />
+								<field name="question_line7_1" attrs="{'invisible':[('show_question_7_1','=',False)]}">
+									<tree editable="button">
+										<field name="question_id" string="Questions" />
+										<field name="answer" string="Answer"/>
+									</tree>
+								</field>
+							</page>
+							<page string="Question 8" attrs="{'invisible':[('show_question_8','=',False)]}"
+								groups="base.group_hr_user">
+							<field name="type_id1" class="font_size_class" readonly="True" />
+								<field name="question_line8_1" attrs="{'invisible':[('show_question_8_1','=',False)]}">
+									<tree editable="button">
+										<field name="question_id" string="Questions" />
+										<field name="answer" string="Answer"/>
+									</tree>
+								</field>
+							</page>
+							<page string="Question 9" attrs="{'invisible':[('show_question_9','=',False)]}"
+								groups="base.group_hr_user">
+							<field name="type_id1" class="font_size_class" readonly="True" />
+								<field name="question_line9_1" attrs="{'invisible':[('show_question_9_1','=',False)]}">
+									<tree editable="button">
+										<field name="question_id" string="Questions" />
+										<field name="answer" string="Answer"/>
+									</tree>
+								</field>
+							</page>
+							<page string="Question 10" attrs="{'invisible':[('show_question_10','=',False)]}"
+								groups="base.group_hr_user">
+							<field name="type_id1" class="font_size_class" readonly="True" />
+								<field name="question_line10_1" attrs="{'invisible':[('show_question_10_1','=',False)]}">
+									<tree editable="button">
+										<field name="question_id" string="Questions" />
+										<field name="answer" string="Answer"/>
+									</tree>
+								</field>
+							</page>
+						</notebook>
+
+						<!-- -->
+						<group attrs="{'invisible':[('stage_id','in',(1,2))]}">	
+									<label for="hod" string="သက်ဆိုင်ရာ HOD နှင့် လုပ်ငန်း ပိုင်းဆိုင်ရာ လူတွေ့မေးမြန်းခြင်း" />
+									<field name="nod_note" placeholder="မှ သုံးသပ်ချက်" />
+						</group>
+						<group>
+									<table>
+										<tr>
+											<td><b>(၁)   မိမိကိုယ်တိုင် နှင့်  Team ကို  Motivate ဖြစ်စေတဲ့အချက်များ။</b></td>
+										</tr>
+										<tr>
+											<td><field name="team_motivate"/></td>
+										</tr>
+										<tr>
+											<td><b>(၂)   Working Environment ကို ဘယ်လို ပုံစံမျိုးဖြစ်စေချင်သလဲ ။</b></td>
+										</tr>
+										<tr>
+											<td><field name="working_environment" /></td>
+										</tr>
+									</table>
+						</group>
+						<!-- -->/
+						<group>
+							<group string="First Interviewers" attrs="{'invisible':[('stage_id','in',(1,3,4,5,6,7))]}">
+								<table>
+									<tr>
+										<td><label for="first_interviewer_name" string="Name"/></td>
+										<td><field name="first_interviewer_name"/></td>
+										<td></td>
+										<td><label for="first_interviewer_name" string="Name"/>
+										</td><td><field name="first_interviewer_name"/></td>
+									</tr>
+									<tr></tr>
+									<tr>
+										<td><label for="first_interviewer_sign" string="Sign" /></td>
+										<td><field name="first_interviewer_sign" widget="signature"/></td>
+										<td></td>
+										<td><label for="first_interviewer_sign" string="Sign" /></td>
+										<td><field name="first_interviewer_sign" widget="signature"/></td>
+									</tr>
+								</table>
+							</group>
+
+							<group string="Second Interviewers" attrs="{'invisible':[('stage_id','in',(1,2,4,5,6,7))]}">
+								<table>
+									<tr>
+										<td><label for="second_interviewer_name" string="Name"/></td>
+										<td><field name="second_interviewer_name"/></td>
+										<td></td>
+										<td><label for="second_interviewer_name" string="Name"/>
+										</td><td><field name="second_interviewer_name"/></td>
+									</tr>
+									<tr></tr>
+									<tr>
+										<td><label for="second_interviewer_sign" string="Sign" /></td>
+										<td><field name="second_interviewer_sign" widget="signature"/></td>
+										<td></td>
+										<td><label for="second_interviewer_sign" string="Sign" /></td>
+										<td><field name="second_interviewer_sign" widget="signature"/></td>
+									</tr>
+								</table>
+							</group>
+						</group>
+							
+				</xpath>
+				</sheet>
+			</field>
+		</record>
+
+		<record model="ir.ui.view" id="view_crm_case_jobs_filter_inherited">
+			<field name="name">Jobs - Recruitment Form</field>
+			<field name="model">hr.applicant</field>
+			<field name="inherit_id" ref="hr_recruitment.view_crm_case_jobs_filter" />
+			<field name="arch" type="xml">
+				<xpath expr="//filter[@name='message_unread']" position="after">
+					<filter string="Reject" name="stage_id" domain="[('stage_id','=',6)]"/>
+				</xpath>
+			</field>
+		</record>
+	</data>
+</openerp>

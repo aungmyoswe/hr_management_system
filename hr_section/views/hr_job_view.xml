@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<openerp>
+	<data>
+		<record id="view_form_hr_job_inherited" model="ir.ui.view">
+			<field name="name">hr.job.form.inherit</field>
+			<field name="model">hr.job</field>
+			<field name="inherit_id" ref="hr.view_hr_job_form" />
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='department_id']" position="after">
+					<field name="section_id" />
+					<field name="sub_section_id" />
+				</xpath>
+			</field>
+		</record>
+
+		<record id="view_tree_hr_job_inherited" model="ir.ui.view">
+			<field name="name">hr.job.tree.inherit</field>
+			<field name="model">hr.job</field>
+			<field name="inherit_id" ref="hr.view_hr_job_tree" />
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='department_id']" position="after">
+					<field name="section_id" />
+					<field name="sub_section_id" />
+				</xpath>
+			</field>
+		</record>
+
+		<record id="view_hr_job_inherited_search" model="ir.ui.view">
+			<field name="name">hr.job.inherited.search</field>
+			<field name="model">hr.job</field>
+			<field name="inherit_id" ref="hr.view_job_filter"/>
+			<field name="arch" type="xml">
+				<xpath expr="//group/filter[@string='Department']" position="replace">
+                                        <filter name="group_department_id" string="Department" domain="[]" context="{'group_by':'department_id'}"/>
+					<filter name="group_section_id" string="Section" domain="[]" context="{'group_by':'section_id'}"/>
+					<filter name="group_sub_section_id" string="Sub Section" domain="[]" context="{'group_by':'sub_section_id'}"/>
+				</xpath>
+			</field>
+		</record>
+	</data>
+</openerp>

@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<openerp>
+
+  <data>
+    <record id="attendance_detail_wizard" model="ir.ui.view">
+      <field name="name">attendance.detail.wizard</field>
+      <field name="model">attendance.detail.wizard</field>
+      <field name="arch" type="xml">
+        <form string="Attendance Detail">
+          
+          <group>
+            <field name="date_from" />
+            <field name="date_to" />
+          </group>
+          <footer>
+            <button name="generate_attendance_detail" string="Generate" type="object" class="oe_highlight"/>
+            or
+            <button string="Cancel" class="oe_link" special="cancel"/>
+          </footer>
+
+         </form>
+      </field>
+    </record>
+
+    <record id="open_attendance_detail_wizard" model="ir.actions.act_window">
+        <field name="name">Attendance Detail</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">attendance.detail.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="attendance_detail_wizard_menu" parent="hr_fingerprint_attendance_menu"  name="Attendance Detail Generate" action="open_attendance_detail_wizard" sequence="3"/>
+
+  </data>
+</openerp>

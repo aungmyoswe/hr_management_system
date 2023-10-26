@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_termination_title_user,termination.title_user,termination.model_termination_title,base.group_hr_user,1,1,1,1
+access_termination_distribute_title_user,termination.distribute.title_user,termination.model_termination_distribute_title,base.group_hr_user,1,1,1,1
+access_termination_distribute_user,termination.distribute_user,termination.model_termination_distribute,base.group_hr_user,1,1,1,1
+access_termination_line_user,termination.line_user,termination.model_termination_line,base.group_hr_user,1,1,1,1
+access_termination_user,termination_user,termination.model_termination,base.group_hr_user,1,1,1,1
+access_termination_line_employee_user,termination.line_employee_user,termination.model_termination_line,base.group_user,True,False,False,False

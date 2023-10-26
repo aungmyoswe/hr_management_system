@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="view_hr_payslip_checking" model="ir.ui.view">
+            <field name="name">hr_payroll_payslip_checking</field>
+            <field name="model">hr.payslip.checking.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Payslips by Employees">
+                    <header>
+                        <button icon="gtk-execute" string="Generate" name="compute_sheet" type="object" class="oe_highlight"  />
+                    </header>
+                    <group>
+                        <label colspan="4" nolabel="1" string="This wizard will generate payslips for all selected employee(s) based on the dates and credit note specified on Payslips Run." />
+                    </group>
+                    <group colspan="4" >
+                        <separator string="Employees" colspan="4"/>
+                        <newline/>
+                        <field name="employee_ids" nolabel="1"/>
+                    </group>
+               </form>
+            </field>
+        </record>
+
+        <record id="action_hr_payslip_checking" model="ir.actions.act_window">
+            <field name="name">Checking Payslips</field>
+            <field name="res_model">hr.payslip.checking.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_hr_payslip_checking"/>
+            <field name="target">new</field>
+        </record>
+
+        <record id="hr_payslip_run_form_inh" model="ir.ui.view">
+            <field name="name">hr.payslip.run.form.inh</field>
+            <field name="model">hr.payslip.run</field>
+            <field name="inherit_id" ref="hr_payroll.hr_payslip_run_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='close_payslip_run']" position="after">
+                    <button name="check_payslip_run" type="object" string="Confirm" states="draft" class="oe_highlight"/>
+                    <button name="%(action_hr_payslip_checking)d" type="action" states="check" string="Payslips Checking" class="oe_highlight"/>
+                    <field name="is_already_approve" invisible="1"/>
+                </xpath>
+                <xpath expr="//button[@string='Generate Payslips']" position="replace">
+                    <button name="%(hr_payroll.action_hr_payslip_by_employees)d" type="action" string="Generate Payslips" attrs="{'invisible': [('is_already_approve','=', False)]}" groups="base.group_hr_manager" class="oe_highlight"/>
+                </xpath>
+                <xpath expr="//button[@string='Set to Draft']" position="replace">
+                    <button string="Set to Draft" name="draft_payslip_run" type="object" states="check,generate,close" />
+                </xpath>
+                 <xpath expr="//button[@string='Close']" position="attributes">
+                    <attribute name="groups">base.group_hr_manager</attribute>
+                </xpath>
+                <field name="slip_ids" position="replace">
+                    <notebook>
+                        <page string="Payslips">
+                            <field name="slip_ids"/>
+                        </page>
+                        <page string="Approval" states="generate">
+                            <field name="approve_ids">
+                                <tree editable="bottom">
+                                     <field name="name"/>
+                                     <field name="date"/>
+                                     <field name="confirm"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </field>
+            </field>
+        </record>
+    </data>
+</openerp>

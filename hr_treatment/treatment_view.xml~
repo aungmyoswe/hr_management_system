@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		
+		<record id="view_treatment_form" model="ir.ui.view">
+			<field name="name">Treatment Form</field>
+			<field name="model">treatment.treatment</field>
+			<field name="arch" type="xml">
+				<form string="Treatment">
+					<sheet>						
+						<group name="group_top">
+							<group name="group_left">
+								<field name="employee_id" required="True"/>
+								<field name="doctor_id" required="True"/>
+								
+							</group>
+							<group name="group_right">
+								<field name="treatment_date" required="1"/>
+								<field name="name" required="1"/>	
+							</group>
+						</group>
+						<group string="Drugs">
+							<field name="drug_id" nolabel="1" >
+								<tree editable="bottom">
+						          			<field name="drug"/>
+						          			<field name="qty"/>
+					    			</tree>
+					   		</field>
+						</group>						
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<record id="view_treatment_type_form" model="ir.ui.view">
+			<field name="name">Doctor Form</field>
+			<field name="model">treatment.doctor</field>
+			<field name="arch" type="xml">
+				<form string="Treatment Type">
+					<sheet>						
+						<group name="group_left">
+							<field name="name" required="1"/>
+						</group>					
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<record id="view_treatment_drug_form" model="ir.ui.view">
+			<field name="name">Drug Form</field>
+			<field name="model">treatment.drug</field>
+			<field name="arch" type="xml">
+				<form string="Drugs">
+					<sheet>						
+						<group name="group_left">
+							<field name="name" required="1"/>
+						</group>					
+					</sheet>
+				</form>
+			</field>
+		</record>
+		
+		<record id="view_treatment_tree" model="ir.ui.view">
+			<field name="name">treatment Tree</field>
+			<field name="model">treatment.treatment</field>
+			<field name="arch" type="xml">
+				<tree string="Treatment">
+					<field name="employee_id"/>
+					<field name="name"/>
+					<field name="drug_line_name"/>
+					<field name="treatment_date"/>					
+				</tree>
+			</field>
+		</record>
+
+		<record id="view_treatment_type_tree" model="ir.ui.view">
+			<field name="name">Doctor Tree</field>
+			<field name="model">treatment.doctor</field>
+			<field name="arch" type="xml">
+				<tree string="Treatment">
+					<field name="name"/>				
+				</tree>
+			</field>
+		</record>
+
+		<record id="view_treatment_drug_tree" model="ir.ui.view">
+			<field name="name">Drug Tree</field>
+			<field name="model">treatment.drug</field>
+			<field name="arch" type="xml">
+				<tree string="Drugs">
+					<field name="name"/>				
+				</tree>
+			</field>
+		</record>
+	
+		<record id="action_treatment_view" model="ir.actions.act_window">
+			<field name="name">Treatment</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">treatment.treatment</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" ref="view_treatment_tree" />
+		</record>
+
+		<record id="action_treatment_type_view" model="ir.actions.act_window">
+			<field name="name">Doctor</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">treatment.doctor</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" ref="view_treatment_type_tree" />
+		</record>
+
+		<record id="action_drug_view" model="ir.actions.act_window">
+			<field name="name">Drug</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">treatment.drug</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" ref="view_treatment_drug_tree" />
+		</record>
+
+		
+
+		<record id="view_hr_employee_treatment_inherited" model="ir.ui.view">
+			<field name="name">hr.employee.form.treatment.inherited</field>
+			<field name="model">hr.employee</field>
+			<field name="inherit_id" ref="hr.view_employee_form" />
+			<field name="arch" type="xml">					
+				<xpath expr="//page[@string='Personal Information']"
+					position="after">					
+					<page string="Treatment" groups="base.group_hr_user">
+						<field name="treatment_id">
+							<tree string="Treatment for Employee">
+								<field name="name"/>
+								<field name="drug_line_name"/>
+								<field name="drug_line_qty"/>
+								<field name="doctor_id"/>
+								<field name="treatment_date"/>	
+                            					</tree>
+						</field>
+					</page>
+				</xpath>				
+			</field>
+		</record>
+		
+		<menuitem id="main_menu" parent="hr.menu_hr_main" name="Clinic" sequence="110" />
+
+		<menuitem action="action_treatment_view" id="treatment_adjust"
+			parent="main_menu" name="Treatment" sequence="110" />
+
+		<menuitem action="action_treatment_type_view" id="treatment_type_adjust"
+			parent="main_menu" name="Doctor" sequence="110" />
+
+		<menuitem action="action_drug_view" id="treatment_drug_adjust"
+			parent="main_menu" name="Drug" sequence="110" />
+	
+	
+	</data>
+</openerp>

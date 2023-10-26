@@ -1,0 +1,23 @@
+.burmese_class 
+{
+    font-size:10pt;
+}
+.burmese_class span
+{
+    font-family:"Win Researcher", "Myanmar3", "Zawgyi-One";
+    font-size:14pt;
+}
+.openerp .oe_form .burmese_class input[type="text"], .openerp .oe_form .burmese_class textarea {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
+    background: white;
+    min-width: 60px;
+    color: #1f1f1f;
+    font-family:  "Win Researcher", "Myanmar3","Lucida Grande",Helvetica, Verdana, Arial, sans-serif;
+    font-size: 15pt;
+    max-height: 100px;
+}
+
+

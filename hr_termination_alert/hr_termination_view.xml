@@ -1,0 +1,29 @@
+<openerp>
+	<data>
+        <record id="view_termination_filter" model="ir.ui.view">
+            <field name="name">Termination Filter</field>
+            <field name="model">termination</field>
+            <field name="arch" type="xml">
+            <search string="Filter">
+                <filter string="Termination over 30"
+                domain="[('termination_line.termination_date','&lt;=', ((context_today()-datetime.timedelta(days=30)).strftime('%%Y-%%m-%%d')))]" name="termination_over_30_filter" />
+            </search>
+            </field>
+        </record>
+	    <record id="action_hr_termination_view" model="ir.actions.act_window">
+            <field name="type">ir.actions.act_window</field>
+            <field name="name">Termination Alert</field>
+            <field name="res_model">termination</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+	    	<field name="context">{
+                    'search_default_termination_over_30_filter': 1
+                }
+            </field>
+        </record>  
+
+		<menuitem id="hr_termination_alert_menu" parent="hr.menu_hr_root" sequence="2" name="Termination Alert"/>
+		<menuitem action="action_hr_termination_view" id="hr_termination_alert"
+			parent="hr.menu_hr_main" name="Termination Alert" sequence="7" />
+	</data>	
+</openerp>

@@ -1,0 +1,12 @@
+.font_size_class 
+{
+    font-size:14pt;
+}
+
+.question_size_class th[data-id='question_id']
+{
+    width: 45%;
+}
+
+
+

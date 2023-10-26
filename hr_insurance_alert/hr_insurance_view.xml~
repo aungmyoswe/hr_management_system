@@ -1,0 +1,44 @@
+<openerp>
+	<data>
+
+	<record id="view_hr_insurance_tree" model="ir.ui.view">
+            <field name="name">hr.employee.insurance.tree.extensions</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_tree"/>
+            <field name="arch" type="xml">
+            <!-- <xpath expr="//tree[@string='Employees']" position='attributes'>
+                  <attribute name="create">0</attribute>
+		  <attribute name="delete">0</attribute>
+            </xpath> -->
+            </field>
+        </record>
+
+	<record id="view_insurance_employee_filter_inherit" model="ir.ui.view">
+            <field name="name">Insurance Employees Filter Inheritance</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='category_ids']" position='after'>
+           			<filter string="Insurance Over 1 year" domain="[('trial_date_start','&lt;=', (context_today()-datetime.timedelta(days=365)).strftime('%Y') + '-10-01'),('trial_date_start','&gt;=', (context_today()-datetime.timedelta(days=365*2)).strftime('%Y') + '-10-01')]" name="insurance_over_1year_filter"/>
+           		</xpath>
+           	</field>
+        </record>
+
+	<record id="action_hr_insurance_view" model="ir.actions.act_window">
+            <field name="type">ir.actions.act_window</field>
+            <field name="name">Insurance Alet</field>
+            <field name="res_model">hr.employee</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+	    <field name="context">{
+                    'search_default_insurance_over_1year_filter': 1
+                }
+            </field>
+            <field name="view_id" ref="view_hr_insurance_tree"/>
+        </record>  
+
+		<menuitem id="hr_insurance_alert_menu" parent="hr.menu_hr_root" sequence="2" name="Insurance Alert"/>
+		<menuitem action="action_hr_insurance_view" id="hr_insurance_alert"
+			parent="hr.menu_hr_main" name="Insurance Alert" sequence="9" />
+	</data>	
+</openerp>

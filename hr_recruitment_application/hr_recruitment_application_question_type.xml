@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<record id="view_hr_application_question_type_form" model="ir.ui.view">
+			<field name="name">HR Training Question Type Form</field>
+			<field name="model">application.question.type</field>
+			<field name="arch" type="xml">
+				<form string="HR Application Question Type">
+					<sheet>			
+						<group>
+							<field name="number" />
+							<field name="name" />
+							<field name="q_active" />
+						</group>
+						<group string="Questions">
+							<field name="question_ids" nolabel="1"/>
+						</group>					
+					</sheet>
+				</form>
+			</field>
+		</record>
+		<record id="view_hr_application_question_type_tree" model="ir.ui.view">
+			<field name="name">HR Application Question Tree</field>
+			<field name="model">application.question.type</field>
+			<field name="arch" type="xml">
+				<tree string="HR Application Question Type">
+					<field name="number" />
+					<field name="name" />
+					<field name="q_active" />
+				    <field name="question_ids" />
+								
+				</tree>
+			</field>
+		</record>
+		
+		<record id="action_hr_application_question_type_view" model="ir.actions.act_window">
+			<field name="name">Application Question</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">application.question.type</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" ref="view_hr_application_question_type_tree" />
+		</record>
+
+		<menuitem action="action_hr_application_question_type_view" id="hr_application_question_type_menu" parent="hr_recruitment_application.hr_application_menu" name="Application Question Type" sequence="2" />
+	</data>
+</openerp>

@@ -1,0 +1,29 @@
+from openerp import api, models, fields
+from openerp.exceptions import ValidationError
+
+class HrESIAttendance(models.Model):    
+	_name = 'hr.esi.attendance'
+	_order = 'name,submit_time desc'
+
+	
+	fingerprint_id = fields.Char("Fingerprint ID", compute="_compute_fingerprint" )
+	employee = fields.Many2one('hr.employee', string='Employee',required=True, store=True, readonly=False) #compute="_compute_employee",
+	name = fields.Date('Date', required=True)
+	action = fields.Selection([('sign_in', 'Sign In'), ('sign_out', 'Sign Out')], 'Action', required=True)
+	submit_time = fields.Float('Time', required=True)
+	reason = fields.Text('Reason')
+
+	@api.one
+	@api.depends('employee')
+	def _compute_fingerprint(self):
+		self.fingerprint_id = self.employee.otherid
+
+	#@api.one
+	#@api.depends('fingerprint_id')
+	#def _compute_employee(self):
+	#	employee_ids = self.env['hr.employee'].search([('otherid','=',self.fingerprint_id)])
+	#	if employee_ids:
+	#		emp = self.env['hr.employee'].browse(employee_ids[0])
+	#		self.employee = emp.id
+	#	else:
+	#		raise ValidationError('No employee with this Fingerprint ID!')

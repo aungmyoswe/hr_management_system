@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<record id="view_hr_roster_form_color" model="ir.ui.view">
+			<field name="name">HR Duty Roster Form Color Extensions</field>
+			<field name="model">hr.employee.duty.roster</field>
+			<field name="inherit_id" ref="hr_duty_roster.view_hr_roster_form" />
+			<field name="arch" type="xml">
+			
+				<xpath expr="//page[@string='Week 1']//field[@name='contract_id']" position='before'>
+					<field name="show_color_1" invisible="1"/>
+					<field name="show_color_2" invisible="1"/>
+					<field name="show_color_3" invisible="1"/>
+					<field name="show_color_4" invisible="1"/>
+					<field name="show_color_5" invisible="1"/>
+					<field name="show_color_6" invisible="1"/>
+					<field name="show_color_7" invisible="1"/>
+				</xpath>
+				
+				<xpath expr="//page[@string='Week 1']//field[@name='shift_id_1']" position='attributes'>
+					<attribute name="fg_color">red:show_color_1=='Sunday';orange:show_color_1=='Saturday';</attribute>
+				</xpath>
+				<xpath expr="//page[@string='Week 1']//field[@name='shift_id_2']" position='attributes'>
+					<attribute name="fg_color">red:show_color_2=='Sunday';orange:show_color_2=='Saturday';</attribute>
+				</xpath>
+				<xpath expr="//page[@string='Week 1']//field[@name='shift_id_3']" position='attributes'>
+					<attribute name="fg_color">red:show_color_3=='Sunday';orange:show_color_3=='Saturday';</attribute>
+				</xpath>
+				<xpath expr="//page[@string='Week 1']//field[@name='shift_id_4']" position='attributes'>
+					<attribute name="fg_color">red:show_color_4=='Sunday';orange:show_color_4=='Saturday';</attribute>
+				</xpath>
+				<xpath expr="//page[@string='Week 1']//field[@name='shift_id_5']" position='attributes'>
+					<attribute name="fg_color">red:show_color_5=='Sunday';orange:show_color_5=='Saturday';</attribute>
+				</xpath>
+				<xpath expr="//page[@string='Week 1']//field[@name='shift_id_6']" position='attributes'>
+					<attribute name="fg_color">red:show_color_6=='Sunday';orange:show_color_6=='Saturday';</attribute>
+				</xpath>
+				<xpath expr="//page[@string='Week 1']//field[@name='shift_id_7']" position='attributes'>
+					<attribute name="fg_color">red:show_color_7=='Sunday';orange:show_color_7=='Saturday';</attribute>
+				</xpath>
+				
+				<xpath expr="//page[@string='Week 2']//field[@name='contract_id']" position='before'>
+					<field name="show_color_8" invisible="1"/>
+					<field name="show_color_9" invisible="1"/>
+					<field name="show_color_10" invisible="1"/>
+					<field name="show_color_11" invisible="1"/>
+					<field name="show_color_12" invisible="1"/>
+					<field name="show_color_13" invisible="1"/>
+					<field name="show_color_14" invisible="1"/>
+				</xpath>
+				
+				<xpath expr="//page[@string='Week 2']//field[@name='shift_id_8']" position='attributes'>
+					<attribute name="fg_color">red:show_color_8=='Sunday';orange:show_color_8=='Saturday';</attribute>
+				</xpath>
+				<xpath expr="//page[@string='Week 2']//field[@name='shift_id_9']" position='attributes'>
+					<attribute name="fg_color">red:show_color_9=='Sunday';orange:show_color_9=='Saturday';</attribute>
+				</xpath>
+				<xpath expr="//page[@string='Week 2']//field[@name='shift_id_10']" position='attributes'>
+					<attribute name="fg_color">red:show_color_10=='Sunday';orange:show_color_10=='Saturday';</attribute>
+				</xpath>
+				<xpath expr="//page[@string='Week 2']//field[@name='shift_id_11']" position='attributes'>
+					<attribute name="fg_color">red:show_color_11=='Sunday';orange:show_color_11=='Saturday';</attribute>
+				</xpath>
+				<xpath expr="//page[@string='Week 2']//field[@name='shift_id_12']" position='attributes'>
+					<attribute name="fg_color">red:show_color_12=='Sunday';orange:show_color_12=='Saturday';</attribute>
+				</xpath>
+				<xpath expr="//page[@string='Week 2']//field[@name='shift_id_13']" position='attributes'>
+					<attribute name="fg_color">red:show_color_13=='Sunday';orange:show_color_13=='Saturday';</attribute>
+				</xpath>
+				<xpath expr="//page[@string='Week 2']//field[@name='shift_id_14']" position='attributes'>
+					<attribute name="fg_color">red:show_color_14=='Sunday';orange:show_color_14=='Saturday';</attribute>
+				</xpath>
+				
+				<xpath expr="//page[@string='Week 3']//field[@name='contract_id']" position='before'>
+					<field name="show_color_15" invisible="1"/>
+					<field name="show_color_16" invisible="1"/>
+					<field name="show_color_17" invisible="1"/>
+					<field name="show_color_18" invisible="1"/>
+					<field name="show_color_19" invisible="1"/>
+					<field name="show_color_20" invisible="1"/>
+					<field name="show_color_21" invisible="1"/>
+				</xpath>
+				
+				<xpath expr="//page[@string='Week 3']//field[@name='shift_id_15']" position='attributes'>
+					<attribute name="fg_color">red:show_color_15=='Sunday';orange:show_color_15=='Saturday';</attribute>
+				</xpath>
+				<xpath expr="//page[@string='Week 3']//field[@name='shift_id_16']" position='attributes'>
+					<attribute name="fg_color">red:show_color_16=='Sunday';orange:show_color_16=='Saturday';</attribute>
+				</xpath>
+				<xpath expr="//page[@string='Week 3']//field[@name='shift_id_17']" position='attributes'>
+					<attribute name="fg_color">red:show_color_17=='Sunday';orange:show_color_17=='Saturday';</attribute>
+				</xpath>
+				<xpath expr="//page[@string='Week 3']//field[@name='shift_id_18']" position='attributes'>
+					<attribute name="fg_color">red:show_color_18=='Sunday';orange:show_color_18=='Saturday';</attribute>
+				</xpath>
+				<xpath expr="//page[@string='Week 3']//field[@name='shift_id_19']" position='attributes'>
+					<attribute name="fg_color">red:show_color_19=='Sunday';orange:show_color_19=='Saturday';</attribute>
+				</xpath>
+				<xpath expr="//page[@string='Week 3']//field[@name='shift_id_20']" position='attributes'>
+					<attribute name="fg_color">red:show_color_20=='Sunday';orange:show_color_20=='Saturday';</attribute>
+				</xpath>
+				<xpath expr="//page[@string='Week 3']//field[@name='shift_id_21']" position='attributes'>
+					<attribute name="fg_color">red:show_color_21=='Sunday';orange:show_color_21=='Saturday';</attribute>
+				</xpath>
+				
+				<xpath expr="//page[@string='Week 4']//field[@name='contract_id']" position='before'>
+					<field name="show_color_22" invisible="1"/>
+					<field name="show_color_23" invisible="1"/>
+					<field name="show_color_24" invisible="1"/>
+					<field name="show_color_25" invisible="1"/>
+					<field name="show_color_26" invisible="1"/>
+					<field name="show_color_27" invisible="1"/>
+					<field name="show_color_28" invisible="1"/>
+				</xpath>
+				
+				<xpath expr="//page[@string='Week 4']//field[@name='shift_id_22']" position='attributes'>
+					<attribute name="fg_color">red:show_color_22=='Sunday';orange:show_color_22=='Saturday';</attribute>
+				</xpath>
+				<xpath expr="//page[@string='Week 4']//field[@name='shift_id_23']" position='attributes'>
+					<attribute name="fg_color">red:show_color_23=='Sunday';orange:show_color_23=='Saturday';</attribute>
+				</xpath>
+				<xpath expr="//page[@string='Week 4']//field[@name='shift_id_24']" position='attributes'>
+					<attribute name="fg_color">red:show_color_24=='Sunday';orange:show_color_24=='Saturday';</attribute>
+				</xpath>
+				<xpath expr="//page[@string='Week 4']//field[@name='shift_id_25']" position='attributes'>
+					<attribute name="fg_color">red:show_color_25=='Sunday';orange:show_color_25=='Saturday';</attribute>
+				</xpath>
+				<xpath expr="//page[@string='Week 4']//field[@name='shift_id_26']" position='attributes'>
+					<attribute name="fg_color">red:show_color_26=='Sunday';orange:show_color_26=='Saturday';</attribute>
+				</xpath>
+				<xpath expr="//page[@string='Week 4']//field[@name='shift_id_27']" position='attributes'>
+					<attribute name="fg_color">red:show_color_27=='Sunday';orange:show_color_27=='Saturday';</attribute>
+				</xpath>
+				<xpath expr="//page[@string='Week 4']//field[@name='shift_id_28']" position='attributes'>
+					<attribute name="fg_color">red:show_color_28=='Sunday';orange:show_color_28=='Saturday';</attribute>
+				</xpath>
+				
+				<xpath expr="//page[@string='Week 5']//field[@name='contract_id']" position='before'>
+					<field name="show_color_29" invisible="1"/>
+					<field name="show_color_30" invisible="1"/>
+					<field name="show_color_31" invisible="1"/>
+				</xpath>
+				
+				<xpath expr="//page[@string='Week 5']//field[@name='shift_id_29']" position='attributes'>
+					<attribute name="fg_color">red:show_color_29=='Sunday';orange:show_color_29=='Saturday';</attribute>
+				</xpath>
+				<xpath expr="//page[@string='Week 5']//field[@name='shift_id_30']" position='attributes'>
+					<attribute name="fg_color">red:show_color_30=='Sunday';orange:show_color_30=='Saturday';</attribute>
+				</xpath>
+				<xpath expr="//page[@string='Week 5']//field[@name='shift_id_31']" position='attributes'>
+					<attribute name="fg_color">red:show_color_31=='Sunday';orange:show_color_31=='Saturday';</attribute>
+				</xpath>
+				
+			</field>
+		</record>
+
+	</data>
+</openerp>

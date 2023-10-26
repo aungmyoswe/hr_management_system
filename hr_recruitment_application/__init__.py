@@ -1,0 +1,2 @@
+from . import hr_recruitment_application_model
+from . import hr_recruitment_application_model_v7

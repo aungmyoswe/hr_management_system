@@ -1,0 +1,466 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<!-- Question -->
+		<record id="view_assessment_question_form" model="ir.ui.view">
+			<field name="name">HR Assessment Question Form</field>
+			<field name="model">assessment.question</field>
+			<field name="arch" type="xml">
+				<form string="HR Assessment Question">
+					<sheet>
+						<group name="group_top">
+							<field name="name" />
+							<field name="type_answer" />
+							<field name="is_permanent" />
+						</group>
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<record id="view_assessment_question_tree" model="ir.ui.view">
+			<field name="name">Accessemtn Question</field>
+			<field name="model">assessment.question</field>
+			<field name="arch" type="xml">
+				<tree string="HR Assessment Question">
+					<field name="name" />
+				</tree>
+			</field>
+		</record>
+
+		<record id="action_hr_assessment_question_view" model="ir.actions.act_window">
+			<field name="name">Assessment Question</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">assessment.question</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" ref="view_assessment_question_tree" />
+		</record>
+
+		<!-- Question type -->
+		<record id="view_assessment_question_type_form" model="ir.ui.view">
+			<field name="name">HR Assessment Question Type Form</field>
+			<field name="model">assessment.question.type</field>
+			<field name="arch" type="xml">
+				<form string="HR Assessment Question Type">
+					<sheet>
+						<group name="group_top">
+							<field name="number" />
+							<field name="name" />
+							<field name="q_active" />
+						</group>
+						<field name="question_ids" />
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<record id="view_assessment_question_type_tree" model="ir.ui.view">
+			<field name="name">Assessment Question</field>
+			<field name="model">assessment.question.type</field>
+			<field name="arch" type="xml">
+				<tree string="Assessment Question Type">
+					<field name="name" />
+					<field name="number" />
+					<field name="q_active" />
+					<field name="question_ids" />
+				</tree>
+			</field>
+		</record>
+
+		<record id="action_hr_assessment_question_type_view" model="ir.actions.act_window">
+			<field name="name">Assessment Question Type</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">assessment.question.type</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" ref="view_assessment_question_type_tree" />
+		</record>
+
+		<record id="action_assessment_view" model="ir.actions.act_window">
+			<field name="name">Assessment</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">assessment.record</field>
+			<field name="src_model">hr.employee</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="context">{'search_default_employee': [active_id],
+				'default_employee': active_id}</field>
+		</record>
+
+		<record id="view_assessment_record_filter" model="ir.ui.view">
+			<field name="name">assessment.record.filter</field>
+			<field name="model">assessment.record</field>
+			<field name="arch" type="xml">
+				<search string="Search Assessment">
+					<field name="employee" />
+				</search>
+			</field>
+		</record>
+
+		<record id="view_assessment_record_form" model="ir.ui.view">
+			<field name="name">HR Assessment Question Form</field>
+			<field name="model">assessment.record</field>
+			<field name="arch" type="xml">
+				<form string="HR Training Record Line">
+					<sheet>
+						<group name="group_top">
+							<group name="group_left">
+
+							</group>
+							<group name="group_right">
+
+							</group>
+						</group>
+						<group string="Results">
+							<group>
+								<field name="employee" /> <!-- readonly="True" -->
+							</group>
+							<group>
+
+							</group>
+						</group>
+
+						<notebook>
+							<page string="Question 1" groups="base.group_hr_user">
+								<field name="type_id1" />
+								<field name="question_line1">
+									<tree string="Training Courses" editable="bottom">
+										<field name="question_id" />
+										<field name="priority" />
+									</tree>
+								</field>
+							</page>
+							<page string="Question 2" groups="base.group_hr_user">
+								<field name="type_id2" />
+								<field name="question_line2" editable="bottom">
+									<tree string="Training Courses">
+										<field name="question_id" />
+										<field name="priority" />
+									</tree>
+								</field>
+							</page>
+						</notebook>
+
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<record id="view_employee_form_assessment_inherit" model="ir.ui.view">
+			<field name="name">hr.employee.assessment.form.inherit</field>
+			<field name="model">hr.employee</field>
+			<field name="inherit_id" ref="hr.view_employee_form" />
+			<field name="arch" type="xml">
+				<xpath expr="//div[@name='button_box']" position="inside">
+					<button name="%(action_assessment_view)d" class="oe_stat_button"
+						icon="fa-book" type="action">
+						<field name="count_number" widget="statinfo" string="Assessment" />
+					</button>
+				</xpath>
+			</field>
+		</record>
+
+		<!--assessment record -->
+
+		<record id="view_hr_assessment_record_form" model="ir.ui.view">
+			<field name="name">Assessment Record Form</field>
+			<field name="model">assessment.record</field>
+			<field name="arch" type="xml">
+				<form string="Assessment Record">
+					<sheet>
+						<group string="REQUIREMENT FOR PERMANENT STAFF">
+							<group name="group_left">
+								<label for="employee" string="အမည်" />
+								<field name="employee" nolabel="1" /> <!-- readonly="True" -->
+
+								<label for="job" string="ရာထူး" />
+								<field name="job" nolabel="1" readonly="True" />
+								<label for="trial_start" string="အလုပ်စတင်ဝင်ရောက်သည့်ရက်စွဲ" />
+								<field name="trial_start" nolabel="1" readonly="True" />
+							</group>
+							<group name="group_right">
+								<label for="assessment_date" string="အကဲဖြတ်သည့်ရက်စွဲ" />
+								<field name="assessment_date" nolabel="1" />
+								<label for="department" string="ဌာန" />
+								<field name="department" nolabel="1" readonly="True" />
+								<label for="trial_end" string="အစမ်းခန့်(၃)လပြည့်သည့်ရက်စွဲ" />
+								<field name="trial_end" nolabel="1" readonly="True" />
+							</group>
+						</group>
+						<field name="show_question_1" invisible="1" />
+						<field name="show_question_1_1" invisible="1"/>
+						<field name="show_question_1_2" invisible="1"/>
+						<field name="show_question_2" invisible="1" />
+						<field name="show_question_2_1" invisible="1"/>
+						<field name="show_question_2_2" invisible="1"/>
+						<field name="show_question_3" invisible="1" />
+						<field name="show_question_3_1" invisible="1"/>
+						<field name="show_question_3_2" invisible="1"/>
+						<field name="show_question_4" invisible="1" />
+						<field name="show_question_4_1" invisible="1"/>
+						<field name="show_question_4_2" invisible="1"/>
+						<field name="show_question_5" invisible="1" />
+						<field name="show_question_5_1" invisible="1"/>
+						<field name="show_question_5_2" invisible="1"/>
+						<field name="show_question_6" invisible="1" />
+						<field name="show_question_6_1" invisible="1"/>
+						<field name="show_question_6_2" invisible="1"/>
+						<field name="show_question_7" invisible="1" />
+						<field name="show_question_7_1" invisible="1"/>
+						<field name="show_question_7_2" invisible="1"/>
+						<field name="show_question_8" invisible="1" />
+						<field name="show_question_8_1" invisible="1"/>
+						<field name="show_question_8_2" invisible="1"/>
+						<field name="show_question_9" invisible="1" />
+						<field name="show_question_9_1" invisible="1"/>
+						<field name="show_question_9_2" invisible="1"/>
+						<field name="show_question_10" invisible="1" />
+						<field name="show_question_10_1" invisible="1"/>
+						<field name="show_question_10_2" invisible="1"/>
+
+						<group string="အမြဲတမ်းဝန်ထမ်းဖြစ်ရန်အကဲဖြတ်သုံးသပ်မှုများ">
+						</group>
+						<notebook>
+							<page string="Question 1" attrs="{'invisible':[('show_question_1','=',False)]}"
+								groups="base.group_hr_user">
+								<field name="type_id1" class="font_size_class" readonly="True" />
+								<field name="question_line1_1" attrs="{'invisible':[('show_question_1_1','=',False)]}">
+									<tree string="Training Courses" editable="bottom" class="question_size_class">
+										<field name="question_id" />
+										<field name="priority" />
+									</tree>
+								</field>
+								<field name="question_line1_2" attrs="{'invisible':[('show_question_1_2','=',False)]}">
+									<tree string="Training Courses" editable="bottom" class="question_size_class">
+										<field name="question_id" />
+										<field name="text" />
+									</tree>
+								</field>
+								<group>
+									<label for="desc_1" string="မှတ်ချက်" />
+									<field name="desc_1" nolabel="1" />
+								</group>
+							</page>
+							
+							<page string="Question 2" attrs="{'invisible':[('show_question_2','=',False)]}"
+								groups="base.group_hr_user">
+								<field name="type_id2" class="font_size_class" readonly="True" />
+								<field name="question_line2_1" attrs="{'invisible':[('show_question_2_1','=',False)]}">
+									<tree string="Training Courses" editable="bottom" class="question_size_class">
+										<field name="question_id" />
+										<field name="priority" />
+									</tree>
+								</field>
+								<field name="question_line2_2" attrs="{'invisible':[('show_question_2_2','=',False)]}">
+									<tree string="Training Courses" editable="bottom" class="question_size_class">
+										<field name="question_id" />
+										<field name="text" />
+									</tree>
+								</field>
+								<group>
+									<label for="desc_2" string="မှတ်ချက်" />
+									<field name="desc_2" nolabel="1" />
+								</group>
+							</page>
+
+							<page string="Question 3" attrs="{'invisible':[('show_question_3','=',False)]}"
+								groups="base.group_hr_user">
+								<field name="type_id3" class="font_size_class" readonly="True" />
+								<field name="question_line3_1" attrs="{'invisible':[('show_question_3_1','=',False)]}">
+									<tree string="Training Courses" editable="bottom" class="question_size_class">
+										<field name="question_id" />
+										<field name="priority" />
+									</tree>
+								</field>
+								<field name="question_line3_2" attrs="{'invisible':[('show_question_3_2','=',False)]}">
+									<tree string="Training Courses" editable="bottom" class="question_size_class">
+										<field name="question_id" />
+										<field name="text" />
+									</tree>
+								</field>
+								<group>
+									<label for="desc_3" string="မှတ်ချက်" />
+									<field name="desc_3" nolabel="1" />
+								</group>
+							</page>
+							<page string="Question 4" attrs="{'invisible':[('show_question_4','=',False)]}"
+								groups="base.group_hr_user">
+								<field name="type_id4" class="font_size_class" readonly="True" />
+								<field name="question_line4_1" attrs="{'invisible':[('show_question_4_1','=',False)]}">
+									<tree string="Training Courses" editable="bottom" class="question_size_class">
+										<field name="question_id" />
+										<field name="priority" />
+									</tree>
+								</field>
+								<field name="question_line4_2" attrs="{'invisible':[('show_question_4_2','=',False)]}">
+									<tree string="Training Courses" editable="bottom" class="question_size_class">
+										<field name="question_id" />
+										<field name="text" />
+									</tree>
+								</field>
+								<group>
+									<label for="desc_4" string="မှတ်ချက်" />
+									<field name="desc_4" nolabel="1" />
+								</group>
+							</page>
+							<page string="Question 5" attrs="{'invisible':[('show_question_5','=',False)]}"
+								groups="base.group_hr_user">
+								<field name="type_id5" class="font_size_class" readonly="True" />
+								<field name="question_line5_1" attrs="{'invisible':[('show_question_5_1','=',False)]}">
+									<tree string="Training Courses" editable="bottom" class="question_size_class">
+										<field name="question_id" />
+										<field name="priority" />
+									</tree>
+								</field>
+								<field name="question_line5_2" attrs="{'invisible':[('show_question_5_2','=',False)]}">
+									<tree string="Training Courses" editable="bottom">
+										<field name="question_id" />
+										<field name="text" />
+									</tree>
+								</field>
+								<group>
+									<label for="desc_5" string="မှတ်ချက်" />
+									<field name="desc_5" nolabel="1" />
+								</group>
+							</page>
+							<page string="Question 6" attrs="{'invisible':[('show_question_6','=',False)]}"
+								groups="base.group_hr_user">
+								<field name="type_id6" class="font_size_class" readonly="True" />
+								<field name="question_line6_1" attrs="{'invisible':[('show_question_6_1','=',False)]}">
+									<tree string="Training Courses" editable="bottom">
+										<field name="question_id" />
+										<field name="priority" />
+									</tree>
+								</field>
+								<field name="question_line6_2" attrs="{'invisible':[('show_question_6_2','=',False)]}">
+									<tree string="Training Courses" editable="bottom">
+										<field name="question_id" />
+										<field name="text" />
+									</tree>
+								</field>
+								<group>
+									<label for="desc_6" string="မှတ်ချက်" />
+									<field name="desc_6" nolabel="1" />
+								</group>
+							</page>
+							<page string="Question 7" attrs="{'invisible':[('show_question_7','=',False)]}"
+								groups="base.group_hr_user">
+								<field name="type_id7" class="font_size_class" readonly="True" />
+								<field name="question_line7_1" attrs="{'invisible':[('show_question_7_1','=',False)]}">
+									<tree string="Training Courses" editable="bottom">
+										<field name="question_id" />
+										<field name="priority" />
+									</tree>
+								</field>
+								<field name="question_line7_2" attrs="{'invisible':[('show_question_7_2','=',False)]}">
+									<tree string="Training Courses" editable="bottom">
+										<field name="question_id" />
+										<field name="text" />
+									</tree>
+								</field>
+								<group>
+									<label for="desc_7" string="မှတ်ချက်" />
+									<field name="desc_7" nolabel="1" />
+								</group>
+							</page>
+							<page string="Question 8" attrs="{'invisible':[('show_question_8','=',False)]}"
+								groups="base.group_hr_user">
+								<field name="type_id8" class="font_size_class" readonly="True" />
+								<field name="question_line8_1" attrs="{'invisible':[('show_question_8_1','=',False)]}">
+									<tree string="Training Courses" editable="bottom">
+										<field name="question_id" />
+										<field name="priority" />
+									</tree>
+								</field>
+								<field name="question_line8_2" attrs="{'invisible':[('show_question_8_2','=',False)]}">
+									<tree string="Training Courses" editable="bottom">
+										<field name="question_id" />
+										<field name="text" />
+									</tree>
+								</field>
+								<group>
+									<label for="desc_8" string="မှတ်ချက်" />
+									<field name="desc_8" nolabel="1" />
+								</group>
+							</page>
+							<page string="Question 9" attrs="{'invisible':[('show_question_9','=',False)]}"
+								groups="base.group_hr_user">
+								<field name="type_id9" class="font_size_class" readonly="True" />
+								<field name="question_line9_1" attrs="{'invisible':[('show_question_9_1','=',False)]}">
+									<tree string="Training Courses" editable="bottom">
+										<field name="question_id" />
+										<field name="priority" />
+									</tree>
+								</field>
+								<field name="question_line9_2" attrs="{'invisible':[('show_question_9_2','=',False)]}">
+									<tree string="Training Courses" editable="bottom">
+										<field name="question_id" />
+										<field name="text" />
+									</tree>
+								</field>
+								<group>
+									<label for="desc_9" string="မှတ်ချက်" />
+									<field name="desc_9" nolabel="1" />
+								</group>
+							</page>
+							<page string="Question 10"
+								attrs="{'invisible':[('show_question_10','=',False)]}" groups="base.group_hr_user">
+								<field name="type_id10" class="font_size_class" readonly="True" />
+								<field name="question_line10_1" attrs="{'invisible':[('show_question_10_1','=',False)]}">
+									<tree string="Training Courses" editable="bottom">
+										<field name="question_id" />
+										<field name="priority" />
+									</tree>
+								</field>
+								<field name="question_line10_2" attrs="{'invisible':[('show_question_10_2','=',False)]}">
+									<tree string="Training Courses" editable="bottom">
+										<field name="question_id" />
+										<field name="text" />
+									</tree>
+								</field>
+								<group>
+									<label for="desc_10" string="မှတ်ချက်" />
+									<field name="desc_10" nolabel="1" />
+								</group>
+							</page>
+						</notebook>
+
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<record id="view_hr_assessment_record_tree" model="ir.ui.view">
+			<field name="name">Assessment Record Tree</field>
+			<field name="model">assessment.record</field>
+			<field name="arch" type="xml">
+				<tree string="Assessment Record"> <!--create="false" -->
+					<!-- <field name="code" /> -->
+					<field name="employee" />
+				</tree>
+			</field>
+		</record>
+
+		<record id="action_hr_assessment_record_line_view" model="ir.actions.act_window">
+			<field name="name">Assessment Record</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">assessment.record</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" ref="view_hr_assessment_record_tree" />
+		</record>
+
+		<!-- -->
+
+		<menuitem id="hr_assessment_menu" parent="hr.menu_hr_root"
+			sequence="1" name="Assessment" />
+		<menuitem action="action_hr_assessment_record_line_view" id="hr_assessment_record_menu"
+			parent="hr_assessment_menu" name="Assessment Record" sequence="1" />
+		<menuitem action="action_hr_assessment_question_view" id="hr_assessment_question_menu"
+			parent="hr_assessment_menu" name="Assessment Question" sequence="2" />
+		<menuitem action="action_hr_assessment_question_type_view"
+			id="hr_assessment_question_type_menu" parent="hr_assessment_menu"
+			name="Assessment Question Type" sequence="3" />
+	</data>
+</openerp>

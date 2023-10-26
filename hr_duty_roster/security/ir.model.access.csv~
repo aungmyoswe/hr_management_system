@@ -1,0 +1,5 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_employee_subject_user,hr.employee.subject_user,employee_info_extension.model_hr_employee_subject,base.group_hr_user,TRUE,TRUE,TRUE,TRUE
+access_hr_employee_degree_user,hr.employee.degree_user,employee_info_extension.model_hr_employee_degree,base.group_hr_user,TRUE,TRUE,TRUE,TRUE
+access_hr_employee_experience_user,hr.employee.experience_user,employee_info_extension.model_hr_employee_experience,base.group_hr_user,TRUE,TRUE,TRUE,TRUE
+access_hr_job_supervisor_user,hr.job.supervisor,employee_info_extension.model_hr_job_supervisor,base.group_hr_user,TRUE,TRUE,TRUE,TRUE

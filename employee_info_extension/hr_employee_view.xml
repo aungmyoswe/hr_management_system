@@ -1,0 +1,384 @@
+<openerp>
+	<data>
+		<!-- add search job title for -->
+		<record id="view_employee_filter_inherit" model="ir.ui.view">
+            		<field name="name">Employees Filter Inheritance</field>
+            		<field name="model">hr.employee</field>
+            		<field name="inherit_id" ref="hr.view_employee_filter"/>
+            		<field name="arch" type="xml">
+                		<xpath expr="//field[@name='department_id']" position='after'>
+           				<field name="job_id"/>
+                                        <field name="trial_date_start" />
+					<field name="department_id"/>
+					<field name="section_id"/>
+					<field name="sub_section_id"/>
+           			</xpath>
+					<xpath expr="//filter[@string='Job']" position="after">
+	           			<filter string="Section" domain="[]" context="{'group_by':'section_id'}"/>
+	                    <filter string="Sub Section" domain="[]" context="{'group_by':'sub_section_id'}"/>
+           			</xpath>
+
+           			<xpath expr="//field[@name='category_ids']" position='after'>
+           				<filter string="After 6 Months" domain="[('trial_date_start','&lt;=', ((context_today()-datetime.timedelta(days=182)).strftime('%%Y-%%m-%%d')))]" name="after_6_months_filter"/>
+           			</xpath>
+
+           		</field>
+       		 </record>
+	
+		<record id="hr.open_view_employee_list_my" model="ir.actions.act_window">
+			<field name="name">Employees</field>
+			<field name="res_model">hr.employee</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="domain">[]</field>
+			<field name="context">{}</field>
+			<field name="view_id" eval="False" />
+			<field name="search_view_id" ref="hr.view_employee_filter" />
+			<field name="help" type="html">
+				<p class="oe_view_nocontent_create">
+					Click to add a new employee.
+				</p>
+				<p>
+					With just a quick glance on the Odoo employee screen, you
+					can easily find all the information you need for each person;
+					contact data, job position, availability, etc.
+				</p>
+			</field>
+		</record>
+		
+		<!-- hr related job position menu action -->
+         <record model="ir.actions.act_window" id="hr_recruitment.action_hr_job">
+            <field name="name">Job Positions</field>
+            <field name="res_model">hr.job</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'search_default_group_section_id': 1,'search_default_group_sub_section_id': 1,'search_default_group_department_id': 1,
+            	'search_default_in_recruitment': 1}</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                 Click here to create a new job or remove the filter on "In Recruitment" to recruit for an on hold job.
+              </p>
+              <p>
+                Define job position profile and manage recruitment in a context of a particular job: print interview survey, define number of expected new employees, and manage its recruitment pipe
+              </p>
+            </field>
+        </record>
+        
+        <record model="ir.ui.view" id="view_employee_form_leave_inh">
+			<field name="name">hr.employee.form.inherit</field>
+			<field name="model">hr.employee</field>
+			<field name="inherit_id" ref="hr_holidays.view_employee_form_leave_inherit" />
+			<field name="arch" type="xml">
+				<xpath expr="//group[@string='Leaves']" position="inside">
+					<label for="remaining_medical_leaves"/>
+                        <div>
+                            <field name="remaining_medical_leaves" class="oe_inline"/> days
+                        </div>
+				</xpath>
+			</field>
+		</record>
+
+		<record model="ir.ui.view" id="view_employee_form_inherit">
+			<field name="name">hr.employee.form.inherit</field>
+			<field name="model">hr.employee</field>
+			<field name="inherit_id" ref="hr.view_employee_form" />
+			<field name="arch" type="xml">
+				<xpath expr="//page[@string='HR Settings']" position="replace" />
+				
+				<xpath expr="//page[@string='Public Information']/group/group/field[@name='department_id']" position="after">
+					<field name="section_id"/>
+					<field name="sub_section_id"/>
+				</xpath>
+
+				<xpath expr="//field[@name='country_id']" position="after">
+                                        <field name="religion" />
+				</xpath>
+
+				<xpath expr="//field[@name='otherid']" position="attributes">
+					<attribute name="readonly">True</attribute>
+				</xpath>
+
+				<xpath expr="//field[@name='otherid']" position="after">
+					<field name="fingerprint_name" readonly="True"/>
+                    <field name="ssnid" />
+                    <field name="license_no"/>
+					<field name="working_experience" />
+					<field name="nrc_image" widget='image' class="oe_avatar" />
+					<field name="house_hold_image" widget='image' class="oe_avatar"/>
+					<field name="attachment_ids" widget="many2many_binary" string="Attach a CV"/>
+				</xpath>
+						
+				<xpath expr="//page[@string='Personal Information']/group" position="after">
+				<group>
+					<group string="Active" name="active_group">
+						<field name="active" />
+						<field name="show_in_report" />
+					</group>
+
+					<group string="Employment Information">
+						<table>
+							<tr>
+								<td>
+									<label for="trial_date_start" style="font-weight:bold;" />
+								</td>
+								<td>
+									<field name="trial_date_start" nolabel="1" />
+								</td>
+								<td></td>
+							</tr>
+							<tr>
+								<td>
+
+                                                                        <label for="employment" style="font-weight:bold;" />
+								</td>
+                                                                <td>
+									<field name="employment" nolabel="1" />
+								</td>
+                                                                <td></td>
+							</tr>
+							<tr>
+								<td>
+									<label for="trial_date_end" style="font-weight:bold;" />
+								</td>
+								<td>
+									<field name="trial_date_end" nolabel="1" />
+								</td>
+								<td></td>
+							</tr>
+							<tr>
+								<td>
+									<label for="office_order_no" style="font-weight:bold;" />
+								</td>
+								<td>
+									<field name="office_order_no" nolabel="1" />
+								</td>
+								<td></td>
+							</tr>
+							
+						</table>
+					</group>
+					</group>
+				</xpath>
+
+				<xpath expr="//div[@class='oe_title']" position="replace">
+					<div class="oe_title">
+						<label for="name" class="oe_edit_only" />
+						<h1>
+							<field name="name" />
+						</h1>
+						<label for="burmese_name" class="oe_edit_only" />
+						<h1>
+							<field name="burmese_name" class="burmese_class"/>
+						</h1>
+						<label for="emp_id" class="oe_edit_only" />
+					
+						<field name="emp_id" />
+						
+						<label for="category_ids" class="oe_edit_only" groups="base.group_hr_user" />
+						<field name="category_ids" widget="many2many_tags"
+							placeholder="e.g. Part Time" groups="base.group_hr_user" />
+						<label for="work_email" class="oe_edit_only" />
+						<field name="work_email" widget="email" />
+						<label for="work_phone" class="oe_edit_only" />
+						<field name="work_phone" />
+					</div>
+				</xpath>
+			</field>
+		</record>
+
+	   <record model="ir.ui.view" id="view_hr_job_form_inherit">
+			<field name="name">hr.job.form.inherit</field>
+			<field name="model">hr.job</field>
+			<field name="inherit_id" ref="hr.view_hr_job_form"/>
+			<field name="arch" type="xml">
+                 <xpath expr="//div[@class='oe_title']" position="replace">
+                       <div class="oe_title">
+				            <label for="name" class="oe_edit_only"/>
+				            <h1><field name="name" class="oe_inline"/></h1>
+				            <label for="burmese_name" class="oe_edit_only" />
+					        <h1><field name="burmese_name" class="burmese_class"/></h1>
+                       </div>
+			     </xpath>
+			     <xpath expr="//field[@name='requirements']" position="after">
+			     	<field name="is_above_supervisor" />
+			     	<!-- invisible="1" -->
+			     </xpath>
+			     <xpath expr="//field[@name='department_id']" position="after">
+			     	<field name="rank" />
+			     </xpath>
+			</field>
+		</record>
+		
+		<record model="ir.ui.view" id="view_department_form_inherit">
+			<field name="name">hr.department.form.inherit</field>
+			<field name="model">hr.department</field>
+			<field name="inherit_id" ref="hr.view_department_form"/>
+			<field name="arch" type="xml">
+                 <xpath expr="//field[@name='name']" position="after">
+                     <field name="burmese_name" class="burmese_class"/>
+			     </xpath>
+			</field>
+		</record>
+
+		<record model="ir.ui.view" id="view_contract_form_inherit">
+			<field name="name">hr.contract.form.inherit</field>
+			<field name="model">hr.employee</field>
+			<field name="inherit_id" ref="hr_contract.hr_hr_employee_view_form2" />
+			<field name="arch" type="xml">
+				<xpath expr="//group[@string='Contract']" position="replace"/>
+				<xpath expr="//group[@string='Birth']" position="replace">
+					<group string="Education and Birthday">
+						<!-- Change education format by thurein soe 9/8/2017 -->
+						<table>
+							<tr>
+								<td><label for="birthday" string="Date of Birth"/></td>
+								<td colspan="4"><field name="birthday"/></td>
+							</tr>
+                                                        <tr>
+								<td><label for="age" string="Age"/></td>
+								<td><field name="age" nolabel="1"/></td>
+							</tr>
+							<tr>
+								<td><label for="education" string="Education"/></td>
+								<td><field name="education" nolabel="1"/></td>
+								<td><field name="subject" nolabel="1"/></td>
+								<td><field name="degree" nolabel="1"/></td>
+							</tr>
+							<tr>
+								<td><label for="other_qualis" string="Other Qualifications"/></td>
+								<td colspan="3"><field name="other_qualis" nolabel="1"/></td>
+							</tr>
+						</table>
+					</group>
+				</xpath>
+				<xpath expr="//field[@name='address_home_id']" position='after'>
+					<field name="mobile"/>
+				</xpath>
+				<xpath expr="//group[@string='Status']" position='replace'>
+					<group string="Status">
+                        <field name="gender"/>
+                        <field name="marital"/>
+                        <field name="blood_group"/>      
+                        <field name="children"/>          
+                    </group>
+                </xpath>
+			</field>
+		</record>
+
+		<record model="ir.ui.view" id="view_employee_tree_inherit">
+			<field name="name">hr.employee.tree.inherit</field>
+			<field name="model">hr.employee</field>
+			<field name="inherit_id" ref="hr.view_employee_tree" />
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='parent_id']" position="replace">
+                    			<field name="parent_id" invisible="1"/>
+                			</xpath>
+                			<xpath expr="//field[@name='work_email']" position="replace">
+                    			<field name="work_email" invisible="1"/>
+                			</xpath>
+                			<xpath expr="//field[@name='job_id']" position="replace">
+                    			<field name="job_id" invisible="1"/>
+                			</xpath>
+				<xpath expr="//field[@name='job_id']" position="after">
+					<field name="section_id" />
+					<field name="sub_section_id" />
+					<field name="trial_date_start" />
+				</xpath>
+				<xpath expr="//field[@name='name']" position="before">
+					<field name="emp_id" />
+				</xpath>
+				<xpath expr="//field[@name='name']" position="after">
+					<field name="identification_id" />
+				</xpath>
+				<xpath expr="//field[@name='work_phone']" position="replace">
+					<field name="job_id" />
+				</xpath>
+			</field>
+		</record>
+
+		<!-- Home Address Township -->
+
+		<record id="view_partner_township_form" model="ir.ui.view">
+			<field name="name">Partner Township Form</field>
+			<field name="model">res.partner.township</field>
+			<field name="arch" type="xml">
+				<form string="Partner Township Form">
+					<sheet>						
+						<group>
+							<group>
+								<field name="name" />
+							</group>
+						</group>						
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<record id="view_partner_township_tree" model="ir.ui.view">
+			<field name="name">Partner Township Tree</field>
+			<field name="model">res.partner.township</field>
+			<field name="arch" type="xml">
+				<tree string="Partner township Tree">
+					<field name="name" />		
+				</tree>
+			</field>
+		</record>
+		
+		<record id="action_view_partner_township_view" model="ir.actions.act_window">
+			<field name="name">Partner Township</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">res.partner.township</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" ref="view_partner_township_tree" />
+		</record>
+
+		<menuitem id="partner_menu" name="Address" parent="hr.menu_hr_configuration"
+		 sequence="5" groups="base.group_hr_manager"/>
+
+		<menuitem action="action_view_partner_township_view" id="partner_township_menu"
+			parent="partner_menu" name="Township" sequence="5" />
+
+		<!-- -->
+		
+		<!-- For Hr Contract -->
+		<!-- <record model="ir.ui.view" id="view_contract_form_inh">
+			<field name="name">hr.contract.form.inh</field>
+			<field name="model">hr.contract</field>
+			<field name="inherit_id" ref="hr_contract.hr_contract_view_form" />
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='job_id']" position="after">
+					<field name="department_id" />
+					<field name="section_id" />
+					<field name="sub_section_id" />
+					<field name="shift_type"/>
+					<field name="office_time"/>
+				</xpath>
+				<xpath expr="//field[@name='wage']" position="after">
+					<field name="specail_allowance" />
+					<field name="insurance_amount"/>
+					<field name="payment_type"/>
+				</xpath>
+				<xpath expr="//field[@name='type_id']" position="after">
+					<field name="is_permanent" />
+				        <field name="permanent_date" />
+				</xpath>
+			</field>
+		</record> -->
+       
+       	<!-- Start 17/01/2018 KKW Add section and sub section field -->
+       	<!-- <record model="ir.ui.view" id="edit_holiday_new_inh">
+			<field name="name">hr.holidays.form.inh</field>
+			<field name="model">hr.holidays</field>
+			<field name="inherit_id" ref="hr_holidays.edit_holiday_new" />
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='department_id']" position="after">
+					<field name="section_id" />
+				    <field name="sub_section_id" />
+				</xpath>
+			</field>
+		</record> -->
+		<!-- End 17/01/2018 KKW Add section and sub section field -->
+
+	</data>
+</openerp>

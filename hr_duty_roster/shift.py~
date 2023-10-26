@@ -1,0 +1,33 @@
+from openerp import fields, models, api
+from openerp.exceptions import ValidationError
+
+class Shift(models.Model):
+    _name = "hr.employee.shift"
+    _rec_name = 'code'
+    
+    name = fields.Char("Name", required=True)
+    code = fields.Char("Code", required=True)
+    time_start = fields.Float("Start", required=True)
+    time_end = fields.Float("End", required=True)
+    time_break = fields.Float("Break", required=True)
+    description = fields.Text("Description")
+    duration = fields.Float("Duration", compute="_compute_duration")
+
+    @api.one
+    @api.depends('time_start','time_end')
+    def _compute_duration(self):
+    	dur = 0
+    	if(self.time_start and self.time_end):
+    		dur = self.time_end - self.time_start
+    		if dur < 0:
+    			dur = dur + 24
+    	self.duration = dur
+      
+class HrOfficeTime(models.Model):
+    _name = 'hr.employee.office.time'
+    
+    name = fields.Char('Name',required=True)
+    code = fields.Char('Code',required=True)
+    time_start = fields.Float("Start", required=True)
+    time_end = fields.Float("End", required=True)
+    description = fields.Text("Description")

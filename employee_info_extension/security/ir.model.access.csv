@@ -1,0 +1,4 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_refraction_user,hr_refraction_user,hr_refraction.model_refraction_refraction,base.group_hr_user,True,True,True,True
+access_hr_refraction_employee_user,hr_refraction_employee_user,hr_refraction.model_refraction_refraction,base.group_user,True,False,False,False
+

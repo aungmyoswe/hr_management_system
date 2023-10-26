@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>	           
+    
+      <record id="view_form_schedule_wizard" model="ir.ui.view">
+			<field name="name">Schedules Add Wizard</field>
+			<field name="model">hr.schedule.wizard</field>
+			<field name="arch" type="xml">
+				<form>
+					<button type="object" name="schedule_popup" string="Add Schedules" class="oe_highlight"/>
+					<button special="cancel" string="Cancel" />
+					<field name="schedule_ids" readonly="1"/>
+				</form>
+			</field>
+		</record>    
+					
+        <act_window 
+        id="action_schedules_add"
+        name="Schedule Selected"
+        res_model="hr.schedule.wizard"
+        src_model="hr.applicant"
+        key2="client_action_multi"
+        view_type="form"
+        view_mode="form"
+        view_id="view_form_schedule_wizard"
+        target="new"
+        context="{'schedule_ids':active_ids}"        
+        />                		        
+	</data>
+</openerp>
+    

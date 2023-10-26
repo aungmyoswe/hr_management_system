@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		
+		<record id="view_termination_form" model="ir.ui.view">
+			<field name="name">Termination Form</field>
+			<field name="model">termination</field>
+			<field name="arch" type="xml">
+				<form string="Termination">
+					<sheet>			
+						<group>		
+							<group>
+								<field name="order_no"/>
+							</group>	
+							<group>
+								<field name="order_date"/>
+							</group>
+						</group>	
+						<field name="title_id"  placeholder="Title"/>
+						<group string="Employees">
+							<field name="termination_line" nolabel="1">
+								<tree string="Termination Lines" editable="bottom">
+                                    <field name="employee" on_change="employee_change(employee)"/> 
+                                    <field name="job"/>
+                                    <field name="department"/>
+                                    <field name="section"/>
+                                    <field name="reason"/>
+                                    <field name="termination_date"/>
+                                    <field name="description"/>
+				    <field name="deactive" />
+                                </tree>
+							</field>
+						</group>
+						<group>
+							<group string="Distribute To">
+								<field name="distribute_line" nolabel="1">
+									<tree string="Distribute Lines" editable="bottom">
+	                                    <!-- <field name="employee" on_change="employee_change(employee)"/>
+	                                    <field name="job"/>
+	                                    <field name="department"/>  -->
+	                                    <field name="title"/>
+	                                </tree>
+								</field>
+							</group>		
+							<group>
+							</group>	
+						</group>			
+					</sheet>
+				</form>
+			</field>
+		</record>
+		
+		<record id="view_termination_tree" model="ir.ui.view">
+			<field name="name">Termination Tree</field>
+			<field name="model">termination</field>
+			<field name="arch" type="xml">
+				<tree string="Termination">
+					<field name="order_no"/>
+					<field name="order_date"/>
+					<field name="title_id"/>			
+				</tree>
+			</field>
+		</record>
+		
+		<record id="view_termination_title_form" model="ir.ui.view">
+			<field name="name">Termination Title Form</field>
+			<field name="model">termination.title</field>
+			<field name="arch" type="xml">
+				<form string="Termination Title">
+					<sheet>						
+						<group name="group_top">
+							<field name="name"/>	
+						</group>					
+					</sheet>
+				</form>
+			</field>
+		</record>
+		
+		<record id="view_termination_title_tree" model="ir.ui.view">
+			<field name="name">Termination Title Tree</field>
+			<field name="model">termination.title</field>
+			<field name="arch" type="xml">
+				<tree string="Termination Title">
+					<field name="name"/>					
+				</tree>
+			</field>
+		</record>
+		
+		<record id="action_termination_title_view" model="ir.actions.act_window">
+			<field name="name">Termination Title</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">termination.title</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" ref="view_termination_title_tree" />
+		</record>
+	
+		<record id="action_termination_view" model="ir.actions.act_window">
+			<field name="name">Termination</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">termination</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" ref="view_termination_tree" />
+		</record>
+
+		<record id="view_hr_employee_termination_inherited" model="ir.ui.view">
+			<field name="name">hr.employee.form.termination.inherited</field>
+			<field name="model">hr.employee</field>
+			<field name="inherit_id" ref="hr.view_employee_form" />
+			<field name="arch" type="xml">					
+				<xpath expr="//page[@string='Personal Information']"
+					position="after">					
+					<page string="Termination" groups="base.group_hr_user">
+						<field name="termination_id">
+							<tree string="Termination for Employee">
+								<field name="termination_date"/>
+								<field name="reason"/>
+                            </tree>
+						</field>
+					</page>
+				</xpath>				
+			</field>
+		</record>
+	
+		<menuitem id="main_menu"
+			parent="hr.menu_hr_main" name="Termination" sequence="110" />
+
+		<menuitem action="action_termination_view" id="termination_adjust"
+			parent="main_menu" name="Termination" sequence="110" />
+			
+		<menuitem id="hr_termination_configuration_menu" name="Termination" parent="hr.menu_hr_configuration"
+		 sequence="4" groups="base.group_hr_manager"/>
+
+		<menuitem action="action_termination_title_view" id="termination_type"
+			parent="hr_termination_configuration_menu" name="Termination Title" sequence="120" />
+
+	</data>
+</openerp>

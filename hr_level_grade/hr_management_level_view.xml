@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+
+		<record id="view_hr_management_level_form" model="ir.ui.view">
+			<field name="name">Management Level Form</field>
+			<field name="model">hr.management.level</field>
+			<field name="arch" type="xml">
+				<form string="Management Level Form" version="7.0">
+					<sheet>
+						<group>
+							<group>
+								<field name="name" />
+								<field name="description" />
+								<field name="salary_amount" />
+								<field name="allowance_amount" />
+								<field name="other_amount" />
+
+							</group>
+						</group>
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<record id="view_hr_management_level_tree" model="ir.ui.view">
+			<field name="name">Management Level Tree</field>
+			<field name="model">hr.management.level</field>
+			<field name="arch" type="xml">
+				<tree string="Management Level Tree">
+					<field name="name" />
+					<field name="description" />
+					<field name="salary_amount" />
+					<field name="allowance_amount" />
+					<field name="other_amount" />
+				</tree>
+			</field>
+		</record>
+
+		<!-- Action -->
+		<record id="action_hr_management_level_view" model="ir.actions.act_window">
+			<field name="name">Management Level</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">hr.management.level</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" ref="view_hr_management_level_tree" />
+		</record>
+
+		<menuitem id="hr_management_level_menu" name="Management Level" parent="hr.menu_hr_configuration"
+		 sequence="12" groups="base.group_hr_manager"/>
+		
+		<menuitem action="action_hr_management_level_view" id="hr_level_menu" parent="hr_management_level_menu" name="Management Level" sequence="1" />
+
+	</data>
+</openerp>

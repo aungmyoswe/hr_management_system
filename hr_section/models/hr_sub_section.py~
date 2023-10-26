@@ -1,0 +1,13 @@
+from openerp import models, fields, api
+
+
+class HrSubSection(models.Model):
+	_name = 'hr.sub.section'
+	_description = 'Sub Section in Human Resource Management'
+
+	name = fields.Char("Name", required=True)
+	department_id = fields.Many2one("hr.department", "Department", required=True)
+	section_id = fields.Many2one("hr.section", "Section", domain="[('department_id', '=', department_id)]", select=True, required=True)
+	#sequence = fields.Integer("Sequence", required=True)
+
+	_defaults = {'department_id': 1}

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="view_hr_promotion_form" model="ir.ui.view">
+            <field name="name">hr promotion form</field>
+            <field name="model">hr.promotion</field>
+            <field name="arch" type="xml">
+                <form string="HR Promotion">
+                    <header>
+                        <button name="validate_promotion" string="Validate" type="object"
+                            class="oe_highlight" states="draft,error"/>
+                        <button name="reverse_promotion" string="Reverse" type="object"
+                            class="oe_highlight" states="finished"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,error,finished" statusbar_colors='{"draft":"red", "error":"red","finished":"blue"}'/>
+                    </header>
+                    <sheet>                     
+                        <group string="HR Promotion">
+                            <group>
+                                <field name="employee" requierd="1" attrs="{'readonly': [('state','not in',('draft','error'))]}"/>
+                                <field name="emp_id" required="1" attrs="{'readonly': [('state','not in',('draft','error'))]}"/>
+                                <field name="doa" required="1" attrs="{'readonly': [('state','not in',('draft','error'))]}"/>
+                                <field name="department" required="1" attrs="{'readonly': [('state','not in',('draft','error'))]}"/>
+                                <field name="section_id" required="1" attrs="{'readonly': [('state','not in',('draft','error'))]}"/>
+                                <field name="sub_section_id" required="1" attrs="{'readonly': [('state','not in',('draft','error'))]}"/>
+                                <field name="old_position" required="1" attrs="{'readonly': [('state','not in',('draft','error'))]}"/>
+                                <field name="old_salary" required="1" attrs="{'readonly': [('state','not in',('draft','error'))]}"/>
+                            </group>
+                            <group>
+                                <field name="new_department" required="1" attrs="{'readonly': [('state','not in',('draft','error'))]}"/>
+                                <field name="new_position" required="1" attrs="{'readonly': [('state','not in',('draft','error'))]}"/>
+                                <field name="new_salary" required="1" attrs="{'readonly': [('state','not in',('draft','error'))]}"/>
+                                <field name="eff_date" required="1" attrs="{'readonly': [('state','not in',('draft','error'))]}"/>
+                                <field name="remark" attrs="{'readonly': [('state','not in',('draft','error'))]}"/>
+                            </group>
+                        </group>    
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="view_hr_promotion_tree" model="ir.ui.view">
+            <field name="name">HR Promotion Tree</field>
+            <field name="model">hr.promotion</field>
+            <field name="arch" type="xml">
+                <tree string="HR Promotion">
+                    <field name="emp_id"/>
+                    <field name="employee"/>
+                    <field name="doa"/>
+                    <field name="old_position"/>
+                    <field name="old_salary"/>
+                    <field name="new_department"/>
+                    <field name="new_position"/>
+                    <field name="new_salary"/>
+                    <field name="eff_date"/>
+                    <field name="remark"/>                   
+                </tree>
+            </field>
+        </record>
+        
+        <record id="action_hr_promotion_view" model="ir.actions.act_window">
+            <field name="name">HR Promotion</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">hr.promotion</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_hr_promotion_tree" />
+        </record>
+        <menuitem id="hr_all_adjustment"
+            parent="hr.menu_hr_root" name="Adjustments" sequence="0" />
+        <menuitem action="action_hr_promotion_view" id="hr_promotion"
+            parent="hr_all_adjustment" name="Promotion" sequence="1" />
+    </data>
+</openerp>

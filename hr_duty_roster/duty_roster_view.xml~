@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<record id="view_hr_roster_form" model="ir.ui.view">
+			<field name="name">HR Duty Roster Form</field>
+			<field name="model">hr.employee.duty.roster</field>
+			<field name="arch" type="xml">
+				<form string="Duty Roster Form">
+					<header>
+						<button string="Compute" name="compute" type="object" class="oe_highlight"/>
+					</header>
+					<sheet>
+						<group name="group_top">							
+							<group name="group_left">
+								<field name="name" required="True"/>
+								<field name="department_id"/>
+								<field name="type"/>
+								<field name="shift_id"/>
+								<field name="sat_shift_id"/>
+							</group>
+							<group name="group_right">
+								<field name="date_from" required="True"/>
+								<field name="date_to" required="True"/>
+								<field name="description"/>								
+							</group>
+						</group>
+						<field name="show_week_1" invisible="1"/>
+						<field name="show_week_2" invisible="1"/>
+						<field name="show_week_3" invisible="1"/>
+						<field name="show_week_4" invisible="1"/>
+						<field name="show_week_5" invisible="1"/>
+						<field name="period" nolabel="1" style="font-size:12;font-weight:bold;"/>
+						<notebook>
+							<page string="Week 1" attrs="{'invisible':[('show_week_1','=',False)]}">						
+								<field name="employees" nolabel="1">
+									<tree string="Employees" editable="bottom">
+										<field name="contract_id"/>
+										<field name="shift_id_1"/>
+										<field name="shift_id_2"/>
+										<field name="shift_id_3"/>
+										<field name="shift_id_4"/>
+										<field name="shift_id_5"/>
+										<field name="shift_id_6"/>
+										<field name="shift_id_7"/>
+	                                </tree>
+								</field>
+							</page>
+							<page string="Week 2" attrs="{'invisible':[('show_week_2','=',False)]}">						
+								<field name="employees_2" nolabel="1">
+									<tree string="Employees" editable="bottom">
+										<field name="contract_id"/>
+										<field name="shift_id_8"/>
+										<field name="shift_id_9"/>
+										<field name="shift_id_10"/>
+										<field name="shift_id_11"/>
+										<field name="shift_id_12"/>
+										<field name="shift_id_13"/>
+										<field name="shift_id_14"/>
+	                                </tree>
+								</field>
+							</page>
+							<page string="Week 3" attrs="{'invisible':[('show_week_3','=',False)]}">						
+								<field name="employees_3" nolabel="1">
+									<tree string="Employees" editable="bottom">
+										<field name="contract_id"/>
+										<field name="shift_id_15"/>
+										<field name="shift_id_16"/>
+										<field name="shift_id_17"/>
+										<field name="shift_id_18"/>
+										<field name="shift_id_19"/>
+										<field name="shift_id_20"/>
+										<field name="shift_id_21"/>
+	                                </tree>
+								</field>
+							</page>
+							<page string="Week 4" attrs="{'invisible':[('show_week_4','=',False)]}">						
+								<field name="employees_4" nolabel="1">
+									<tree string="Employees" editable="bottom">
+										<field name="contract_id"/>
+										<field name="shift_id_22"/>
+										<field name="shift_id_23"/>
+										<field name="shift_id_24"/>
+										<field name="shift_id_25"/>
+										<field name="shift_id_26"/>
+										<field name="shift_id_27"/>
+										<field name="shift_id_28"/>
+	                                </tree>
+								</field>
+							</page>
+							<page string="Week 5" attrs="{'invisible':[('show_week_5','=',False)]}">						
+								<field name="employees_5" nolabel="1">
+									<tree string="Employees" editable="bottom">
+										<field name="contract_id"/>
+										<field name="shift_id_29"/>
+										<field name="shift_id_30"/>
+										<field name="shift_id_31"/>
+	                                </tree>
+								</field>
+							</page>
+						</notebook>			
+						
+						<separator string="Shift"/>
+						<field name="shifts"/>							
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+
+		<record id="view_hr_roster_tree" model="ir.ui.view">
+			<field name="name">HR Duty Roster Tree</field>
+			<field name="model">hr.employee.duty.roster</field>
+			<field name="arch" type="xml">
+				<tree string="Duty Roster">
+					<field name="name"/>
+					<field name="department_id"/>
+					<field name="date_from"/>
+					<field name="date_to"/>
+					<field name="shift_id"/>
+					<field name="type"/>		
+				</tree>
+			</field>
+		</record>
+		
+		<record id="action_hr_roster_view" model="ir.actions.act_window">
+			<field name="name">HR Duty Roster</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">hr.employee.duty.roster</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" ref="view_hr_roster_tree" />
+		</record>
+		
+		<menuitem action="action_hr_roster_view" id="hr_roster_menu"
+			parent="hr_duty_roster_esi.hr_duty_roster_menu" name="Duty Roster" sequence="2" />
+		
+		<record id="view_hr_roster_line_form" model="ir.ui.view">
+			<field name="name">HR Employee Duty Roster Form</field>
+			<field name="model">hr.employee.duty.roster.line</field>
+			<field name="arch" type="xml">
+				<form string="Employee Duty Roster">
+					<sheet>
+						<group name="group_top">							
+							<group name="employee" string="Employee Info">
+								<field name="contract_id" required="True"/>
+								<field name="job_id" readonly="1"/>
+								<field name="emp_department" readonly="1"/>
+							</group>
+							<group name="group_right" string="Duster Roster">
+								<field name="roster_id" required="True"/>
+								<field name="department_id"/>
+								<field name="type"/>
+							</group>
+						</group>
+						
+						<group>
+							<group>
+								<field name="show_week_1" invisible="1"/>
+								<field name="show_week_2" invisible="1"/>
+								<field name="show_week_3" invisible="1"/>
+								<field name="show_week_4" invisible="1"/>
+								<field name="show_week_5" invisible="1"/>
+							</group>
+							<group>
+								<field name="show_shift_1" invisible="1"/>
+								<field name="show_shift_2" invisible="1"/>
+								<field name="show_shift_3" invisible="1"/>
+								<field name="show_shift_4" invisible="1"/>
+								<field name="show_shift_5" invisible="1"/>
+								<field name="show_shift_6" invisible="1"/>
+								<field name="show_shift_7" invisible="1"/>
+								<field name="show_shift_8" invisible="1"/>
+								<field name="show_shift_9" invisible="1"/>
+								<field name="show_shift_10" invisible="1"/>
+								<field name="show_shift_11" invisible="1"/>
+								<field name="show_shift_12" invisible="1"/>
+								<field name="show_shift_13" invisible="1"/>
+								<field name="show_shift_14" invisible="1"/>
+								<field name="show_shift_15" invisible="1"/>
+								<field name="show_shift_16" invisible="1"/>
+								<field name="show_shift_17" invisible="1"/>
+								<field name="show_shift_18" invisible="1"/>
+								<field name="show_shift_19" invisible="1"/>
+								<field name="show_shift_20" invisible="1"/>
+								<field name="show_shift_21" invisible="1"/>
+								<field name="show_shift_22" invisible="1"/>
+								<field name="show_shift_23" invisible="1"/>
+								<field name="show_shift_24" invisible="1"/>
+								<field name="show_shift_25" invisible="1"/>
+								<field name="show_shift_26" invisible="1"/>
+								<field name="show_shift_27" invisible="1"/>
+								<field name="show_shift_28" invisible="1"/>
+								<field name="show_shift_29" invisible="1"/>
+								<field name="show_shift_30" invisible="1"/>
+								<field name="show_shift_31" invisible="1"/>
+							</group>
+						</group>
+						
+						<sperator><field name="period" nolabel="1" style="font-size:30;font-weight:bold;color:#7C7BAD;"/></sperator>
+						<table class="my_css_table">
+							<tr>
+								<th><label string="Week 1" attrs="{'invisible':[('show_week_1','=',False)]}"/></th>
+								<th><label string="Week 2" attrs="{'invisible':[('show_week_2','=',False)]}"/></th>
+								<th><label string="Week 3" attrs="{'invisible':[('show_week_3','=',False)]}"/></th>
+								<th><label string="Week 4" attrs="{'invisible':[('show_week_4','=',False)]}"/></th>
+								<th><label string="Week 5" attrs="{'invisible':[('show_week_5','=',False)]}"/></th>
+							</tr>
+							
+							<tr>
+								<td>
+									<label for="shift_id_1" string="D-1 : " attrs="{'invisible':[('show_shift_1','=',False)]}"/>
+									<field name="shift_id_1" nolabel="1" options="{'no_open':True}" attrs="{'invisible':[('show_shift_1','=',False)]}"/>
+								</td>
+								<td>
+									<label for="shift_id_8" string="D-8 : " attrs="{'invisible':[('show_shift_8','=',False)]}"/>
+									<field name="shift_id_8" nolabel="1" options="{'no_open':True}" attrs="{'invisible':[('show_shift_8','=',False)]}"/>
+								</td>
+								<td>	
+									<label for="shift_id_15" string="D-15 : " attrs="{'invisible':[('show_shift_15','=',False)]}"/>
+									<field name="shift_id_15" nolabel="1" options="{'no_open':True}" attrs="{'invisible':[('show_shift_15','=',False)]}"/>
+								</td>	
+								<td>
+									<label for="shift_id_22" string="D-22 : " attrs="{'invisible':[('show_shift_22','=',False)]}"/>
+									<field name="shift_id_22" nolabel="1" options="{'no_open':True}" attrs="{'invisible':[('show_shift_22','=',False)]}"/>
+								</td>
+								<td>	
+									<label for="shift_id_29" string="D-29 : " attrs="{'invisible':[('show_shift_29','=',False)]}"/>
+									<field name="shift_id_29" nolabel="1" options="{'no_open':True}" attrs="{'invisible':[('show_shift_29','=',False)]}"/>
+								</td>
+						    </tr>
+						    
+						    <tr>
+								<td>
+									<label for="shift_id_2" string="D-2  : " attrs="{'invisible':[('show_shift_2','=',False)]}"/>
+									<field name="shift_id_2" nolabel="1" options="{'no_open':True}" attrs="{'invisible':[('show_shift_2','=',False)]}"/>
+								</td>	
+								<td>
+									<label for="shift_id_9" string="D-9  : " attrs="{'invisible':[('show_shift_9','=',False)]}"/>
+									<field name="shift_id_9" nolabel="1" options="{'no_open':True}" attrs="{'invisible':[('show_shift_9','=',False)]}"/>
+								</td>
+								<td>	
+									<label for="shift_id_16" string="D-16 : " attrs="{'invisible':[('show_shift_16','=',False)]}"/>
+									<field name="shift_id_16" nolabel="1" options="{'no_open':True}" attrs="{'invisible':[('show_shift_16','=',False)]}"/>
+								</td>
+								<td>
+									<label for="shift_id_23" string="D-23 : " attrs="{'invisible':[('show_shift_23','=',False)]}"/>
+									<field name="shift_id_23" nolabel="1" options="{'no_open':True}" attrs="{'invisible':[('show_shift_23','=',False)]}"/>
+								</td>	
+								<td>	
+									<label for="shift_id_30" string="D-30 : " attrs="{'invisible':[('show_shift_30','=',False)]}"/>
+									<field name="shift_id_30" nolabel="1" options="{'no_open':True}" attrs="{'invisible':[('show_shift_30','=',False)]}"/>
+								</td>
+							</tr>
+							
+							<tr>
+								<td>
+									<label for="shift_id_3" string="D-3 : " attrs="{'invisible':[('show_shift_3','=',False)]}"/>								
+									<field name="shift_id_3" nolabel="1" options="{'no_open':True}" attrs="{'invisible':[('show_shift_3','=',False)]}"/>
+								</td>
+								<td>
+									<label for="shift_id_10" string="D-10 : " attrs="{'invisible':[('show_shift_10','=',False)]}"/>
+									<field name="shift_id_10" nolabel="1" options="{'no_open':True}" attrs="{'invisible':[('show_shift_10','=',False)]}"/>
+								</td>	
+								<td>	
+									<label for="shift_id_17" string="D-17 : " attrs="{'invisible':[('show_shift_17','=',False)]}"/>
+									<field name="shift_id_17" nolabel="1" options="{'no_open':True}" attrs="{'invisible':[('show_shift_17','=',False)]}"/>
+								</td>
+								<td>
+									<label for="shift_id_24" string="D-24 : " attrs="{'invisible':[('show_shift_24','=',False)]}"/>
+									<field name="shift_id_24" nolabel="1" options="{'no_open':True}" attrs="{'invisible':[('show_shift_24','=',False)]}"/>
+								</td>
+								<td>	
+									<label for="shift_id_31" string="D-31: " attrs="{'invisible':[('show_shift_31','=',False)]}"/>
+									<field name="shift_id_31" nolabel="1" options="{'no_open':True}" attrs="{'invisible':[('show_shift_31','=',False)]}"/>
+								</td>
+							</tr>
+								
+							<tr>
+								<td>
+									<label for="shift_id_4" string="D-4 : " attrs="{'invisible':[('show_shift_4','=',False)]}"/>								
+									<field name="shift_id_4" nolabel="1" options="{'no_open':True}" attrs="{'invisible':[('show_shift_4','=',False)]}"/>
+								</td>	
+								<td>
+									<label for="shift_id_11" string="D-11 : " attrs="{'invisible':[('show_shift_11','=',False)]}"/>
+									<field name="shift_id_11" nolabel="1" options="{'no_open':True}" attrs="{'invisible':[('show_shift_11','=',False)]}"/>
+								</td>
+								<td>	
+									<label for="shift_id_18" string="D-18 : " attrs="{'invisible':[('show_shift_18','=',False)]}"/>
+									<field name="shift_id_18" nolabel="1" options="{'no_open':True}" attrs="{'invisible':[('show_shift_18','=',False)]}"/>
+								</td>
+								<td>	
+									<label for="shift_id_25" string="D-25 : " attrs="{'invisible':[('show_shift_25','=',False)]}"/>
+									<field name="shift_id_25" nolabel="1" options="{'no_open':True}" attrs="{'invisible':[('show_shift_25','=',False)]}"/>
+								</td>
+								<td></td>
+							</tr>
+								
+							<tr>
+								<td>
+									<label for="shift_id_5" string="D-5 : " attrs="{'invisible':[('show_shift_5','=',False)]}"/>								
+									<field name="shift_id_5" nolabel="1" options="{'no_open':True}" attrs="{'invisible':[('show_shift_5','=',False)]}"/>
+								</td>
+								<td>
+									<label for="shift_id_12" string="D-12 : " attrs="{'invisible':[('show_shift_12','=',False)]}"/>
+									<field name="shift_id_12" nolabel="1" options="{'no_open':True}" attrs="{'invisible':[('show_shift_12','=',False)]}"/>
+								</td>
+								<td>	
+									<label for="shift_id_19" string="D-19 : " attrs="{'invisible':[('show_shift_19','=',False)]}"/>
+									<field name="shift_id_19" nolabel="1" options="{'no_open':True}" attrs="{'invisible':[('show_shift_19','=',False)]}"/>									
+								</td>
+								<td>	
+									<label for="shift_id_26" string="D-26 : " attrs="{'invisible':[('show_shift_26','=',False)]}"/>
+									<field name="shift_id_26" nolabel="1" options="{'no_open':True}" attrs="{'invisible':[('show_shift_26','=',False)]}"/>
+								</td>
+								<td></td>
+							</tr>
+							
+							<tr>
+								<td>
+									<label for="shift_id_6" string="D-6 : " attrs="{'invisible':[('show_shift_6','=',False)]}"/>								
+									<field name="shift_id_6" nolabel="1" options="{'no_open':True}" attrs="{'invisible':[('show_shift_6','=',False)]}"/>
+								</td>
+								<td>
+									<label for="shift_id_13" string="D-13 : " attrs="{'invisible':[('show_shift_13','=',False)]}"/>
+									<field name="shift_id_13" nolabel="1" options="{'no_open':True}" attrs="{'invisible':[('show_shift_13','=',False)]}"/>
+								</td>
+								<td>	
+									<label for="shift_id_20" string="D-20 : " attrs="{'invisible':[('show_shift_20','=',False)]}"/>
+									<field name="shift_id_20" nolabel="1" options="{'no_open':True}" attrs="{'invisible':[('show_shift_20','=',False)]}"/>									
+								</td>
+								<td>	
+									<label for="shift_id_27" string="D-27 : " attrs="{'invisible':[('show_shift_27','=',False)]}"/>
+									<field name="shift_id_27" nolabel="1" options="{'no_open':True}" attrs="{'invisible':[('show_shift_27','=',False)]}"/>
+								</td>
+								<td></td>
+							</tr>
+							
+							<tr>
+								<td>
+									<label for="shift_id_7" string="D-7 : " attrs="{'invisible':[('show_shift_7','=',False)]}"/>								
+									<field name="shift_id_7" nolabel="1" options="{'no_open':True}" attrs="{'invisible':[('show_shift_7','=',False)]}"/>
+								</td>
+								<td>
+									<label for="shift_id_14" string="D-14 : " attrs="{'invisible':[('show_shift_14','=',False)]}"/>
+									<field name="shift_id_14" nolabel="1" options="{'no_open':True}" attrs="{'invisible':[('show_shift_14','=',False)]}"/>
+								</td>
+								<td>	
+									<label for="shift_id_21" string="D-21 : " attrs="{'invisible':[('show_shift_21','=',False)]}"/>
+									<field name="shift_id_21" nolabel="1" options="{'no_open':True}" attrs="{'invisible':[('show_shift_21','=',False)]}"/>									
+								</td>
+								<td>	
+									<label for="shift_id_28" string="D-28 : " attrs="{'invisible':[('show_shift_28','=',False)]}"/>
+									<field name="shift_id_28" nolabel="1" options="{'no_open':True}" attrs="{'invisible':[('show_shift_28','=',False)]}"/>
+								</td>
+								
+								<td></td>
+							</tr>
+							
+						</table>						
+					</sheet>
+				</form>
+			</field>
+		</record>
+		
+		<record id="view_hr_roster_line_tree" model="ir.ui.view">
+			<field name="name">HR Duty Roster Line Tree</field>
+			<field name="model">hr.employee.duty.roster.line</field>
+			<field name="arch" type="xml">
+				<tree string="Employee Duty Roster" create="false" edit="false">
+					<field name="roster_id"/>
+					<field name="employee_id"/>
+					<!-- <field name="shift_id_1"/> -->
+					<field name="date_from"/>
+					<field name="date_to"/>	
+				</tree>
+			</field>
+		</record>
+		
+		<record id="action_hr_roster_line_view" model="ir.actions.act_window">
+			<field name="name">HR Employee Duty Roster</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">hr.employee.duty.roster.line</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<!-- <field name="limit">20</field> -->
+			<field name="view_id" ref="view_hr_roster_line_tree" />
+		</record>
+
+	<record id="hr_roster_line_filter" model="ir.ui.view">
+            <field name="name">HR Employee Duty Roster Line Filter</field>
+            <field name="model">hr.employee.duty.roster.line</field>
+            <field name="arch" type="xml">
+                <search string="Employees">
+                    <field name="employee_id" string="Employees"/>
+                </search>
+             </field>
+         </record>
+
+		<menuitem action="action_hr_roster_line_view" id="hr_roster_line_menu"
+			parent="hr_duty_roster_esi.hr_duty_roster_menu" name="Employee Duty Roster" sequence="3" />
+	</data>
+</openerp>

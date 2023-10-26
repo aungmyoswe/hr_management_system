@@ -1,0 +1,55 @@
+<?xml version="1.0" ?>
+<openerp>
+	<data>
+
+		<record model="hr.recruitment.stage" id="hr_recruitment.stage_job1">
+			<field name="name">Application</field>
+			<field name="sequence">0</field>
+		</record>
+
+		<record model="hr.recruitment.stage" id="hr_recruitment.stage_job2">
+			<field name="name">First Interview</field>
+			<field name="template_id" ref="hr_recruitment.applicant_interest" />
+			<field name="sequence">1</field>
+		</record>
+
+		<record model="hr.recruitment.stage" id="hr_recruitment.stage_job3">
+			<field name="name">Second Interview</field>
+			<field name="sequence">2</field>
+		</record>
+
+		<record model="hr.recruitment.stage" id="stage_job7">
+			<field name="name">Final Interview</field>
+			<field name="sequence">3</field>
+		</record>
+
+		<record model="hr.recruitment.stage" id="stage_job8">
+			<field name="name">Background Check</field>
+			<field name="sequence">4</field>
+		</record>
+
+		<record model="hr.recruitment.stage" id="stage_job9">
+			<field name="name">Medical Check Up</field>
+			<field name="sequence">5</field>
+		</record>
+
+		<record model="hr.recruitment.stage" id="hr_recruitment.stage_job4">
+			<field name="name">Job Offer</field>
+			<field name="sequence">6</field>
+		</record>
+
+		<record model="hr.recruitment.stage" id="hr_recruitment.stage_job5">
+			<field name="name">Acceptence</field>
+			<field name="sequence">7</field>
+			<field name="fold" eval="True" />
+		</record>
+
+		<record model="hr.recruitment.stage" id="hr_recruitment.stage_job6">
+			<field name="name">Reject</field>
+			<field name="sequence">8</field>
+			<field name="template_id" ref="hr_recruitment.applicant_refuse" />
+			<field name="fold" eval="True" />
+		</record>
+
+	</data>
+</openerp>

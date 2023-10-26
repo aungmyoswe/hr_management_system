@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>	               
+		<record id="view_form_payslip_wizard" model="ir.ui.view">
+			<field name="name">Payslip compute wizard</field>
+			<field name="model">hr.payslip.wizard</field>
+			<field name="arch" type="xml">
+				<form>
+					<button type="object" name="compute_all_slips" string="Compute All Slips" class="oe_highlight"/>
+					<button special="cancel" string="Cancel" />
+					<field name="slip_ids" readonly="1"/>
+				</form>
+			</field>
+		</record>
+					
+        <act_window id="action_payslip_wizard"
+        name="Compute Selected"
+        res_model="hr.payslip.wizard"
+        src_model="hr.payslip"
+        key2="client_action_multi"
+        view_type="form"
+        view_mode="form"
+        view_id="view_form_payslip_wizard"
+        target="new"
+        context="{'slip_ids':active_ids}"        
+        />
+
+        <record id="view_form_payslip_input_wizard" model="ir.ui.view">
+			<field name="name">Payslip Input Compute wizard</field>
+			<field name="model">hr.payslip.input.wizard</field>
+			<field name="arch" type="xml">
+				<form>
+					<button type="object" name="import_all_amount" string="Import All" class="oe_highlight"/>
+					<button special="cancel" string="Cancel" />
+					<field name="import_ids" readonly="1"/>
+				</form>
+			</field>
+		</record>
+					
+        <act_window id="action_payslip_input_wizard"
+        name="Import Selected"
+        res_model="hr.payslip.input.wizard"
+        src_model="data_import.payroll"
+        key2="client_action_multi"
+        view_type="form"
+        view_mode="form"
+        view_id="view_form_payslip_input_wizard"
+        target="new"
+        context="{'import_ids':active_ids}"        
+        />                		        
+	</data>
+</openerp>
+    

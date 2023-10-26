@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+    <record id="action_hr_sub_section_tree_view" model="ir.ui.view">
+      <field name="name">sub.section.tree</field>
+      <field name="model">hr.sub.section</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Sub Section">
+          <field name="name" />
+          <field name="department_id" />
+          <field name="section_id" />
+          <field name="sequence" />
+        </tree>
+      </field>
+    </record>  
+
+    <record id="action_hr_sub_section_form_view" model="ir.ui.view">
+      <field name="name">sub.section.form</field>
+      <field name="model">hr.sub.section</field>
+      <field name="arch" type="xml">
+        <form string="Sub Section">
+          <group name="group_top">
+            <group name="group_left">
+              <field name="name" />
+              <field name="department_id" />
+            </group>
+            <group name="group_right">
+              <field name="sequence" />
+              <field name="section_id" />
+            </group>
+          </group>
+        </form>
+      </field>
+    </record>  
+
+    <!-- Action to open Section list -->
+    <act_window id="action_hr_sub_section"
+     name="Sub Section"
+     res_model="hr.sub.section"
+     view_mode="tree,form" />
+     <!-- Menu item to open Section list -->
+     <menuitem id="menu_sub_section"
+       name="Sub Section"
+       parent="hr.menu_hr_configuration"
+       sequence="7"
+       action="action_hr_sub_section" />
+     </data>
+   </openerp>

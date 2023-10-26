@@ -1,0 +1,423 @@
+from datetime import datetime
+from datetime import timedelta
+from dateutil import tz
+
+from openerp.osv import osv
+from openerp.tools.translate import _
+
+class hr_payslip(osv.osv):
+    '''
+    Pay Slip
+    '''
+
+    _name = 'hr.payslip'
+    _inherit = 'hr.payslip'
+
+    def get_worked_day_lines(self, cr, uid, contract_ids, date_from, date_to, context=None):
+        # print 'Work day calculation started'
+        res = super(hr_payslip,self).get_worked_day_lines(cr,uid,contract_ids,date_from,date_to,context=context)
+        wage_adjust_obj = self.pool.get('hr.wage.adjustment')
+        roster_line_obj = self.pool.get('hr.employee.duty.roster.line')
+        travel_obj = self.pool.get('hr.travel.record')
+        leave_obj = self.pool.get('hr.holidays')
+        for contract in self.pool.get('hr.contract').browse(cr,uid,contract_ids,context=context):
+            day_from = datetime.strptime(str(date_from), "%Y-%m-%d")
+            day_to = datetime.strptime(str(date_to), "%Y-%m-%d")
+            nb_of_days = (day_to - day_from).days + 1
+
+            actual_days = {
+                 'name': _("Acutal Working Days"),
+                 'sequence': 1,
+                 'code': 'ACWD',
+                 'number_of_days': nb_of_days,
+                 'number_of_hours': 0.0,
+                 'contract_id': contract.id,
+            }
+            attendances = {
+                 'name': _("Normal Working Days 2 paid at 100%"),
+                 'sequence': 2,
+                 'code': 'WD30',
+                 'number_of_days': 0.0,
+                 'number_of_hours': 0.0,
+                 'contract_id': contract.id,
+            }
+            lates_15 = {
+                 'name': _("Late in 15 Minutes"),
+                 'sequence': 3,
+                 'code': 'LTMA',
+                 'number_of_days': 0.0,
+                 'number_of_hours': 0.0,
+                 'contract_id': contract.id,
+            }
+            lates_1 = {
+                 'name': _("Late in 1 Hours"),
+                 'sequence': 4,
+                 'code': 'LTMB',
+                 'number_of_days': 0.0,
+                 'number_of_hours': 0.0,
+                 'contract_id': contract.id,
+            }
+            lates_half = {
+                 'name': _("Late in Half Day"),
+                 'sequence': 5,
+                 'code': 'LTMC',
+                 'number_of_days': 0.0,
+                 'number_of_hours': 0.0,
+                 'contract_id': contract.id,
+            }
+            # Absence Leave
+	    absence_leave = {
+                 'name': _("Absence Leaves"),
+                 'sequence': 8,
+                 'code': 'AL',
+                 'number_of_days': 0.0,
+                 'number_of_hours': 0.0,
+                 'contract_id': contract.id,
+            }
+            # BONUS MARKS
+            bonus_att_marks = {
+                 'name': _("Bonus Marks For Attendance"),
+                 'sequence': 6,
+                 'code': 'BMFA',
+                 'number_of_days': 0.0,
+                 'number_of_hours': 0.0,
+                 'contract_id': contract.id,
+            }
+            bonus_late_marks = {
+                 'name': _("Bonus Marks For Late"),
+                 'sequence': 7,
+                 'code': 'BMFL',
+                 'number_of_days': 0.0,
+                 'number_of_hours': 0.0,
+                 'contract_id': contract.id,
+            }
+            over_time = {
+                 'name': _("Overtime hours"),
+                 'sequence': 8,
+                 'code': 'OTH',
+                 'number_of_days': 0.0,
+                 'number_of_hours': 0.0,
+                 'contract_id': contract.id,
+            }
+            # BEFORE OT HOURS
+            before_over_time = {
+                 'name': _("Before Overtime hours"),
+                 'sequence': 9,
+                 'code': 'BOTH',
+                 'number_of_days': 0.0,
+                 'number_of_hours': 0.0,
+                 'contract_id': contract.id,
+            }
+            str_msg = "Attendence Bonus (Before 10." + str(day_to.month) + '.' + str(day_to.year) + ')'
+            att_bonus_before = {
+                 'name': _(str_msg),
+                 'sequence': 10,
+                 'code': 'ATBF',
+                 'number_of_days': 0.0,
+                 'number_of_hours': 0.0,
+                 'contract_id': contract.id,
+            }
+            str_msg = "Attendence Bonus (After 10." + str(day_to.month) + '.' + str(day_to.year) + ')'
+            att_bonus_after = {
+                 'name': _(str_msg),
+                 'sequence': 11,
+                 'code': 'ATAF',
+                 'number_of_days': 0.0,
+                 'number_of_hours': 0.0,
+                 'contract_id': contract.id,
+            }
+            travel_all = {
+                 'name': _("Travel Days"),
+                 'sequence': 12,
+                 'code': 'TRAD',
+                 'number_of_days': 0.0,
+                 'number_of_hours': 0.0,
+                 'contract_id': contract.id,
+            }
+            
+            worked_days = 0.0
+            worked_hours = 0.0
+            late_days_15 = 0.0
+            late_mins_15 = 0.0
+            late_days_1 = 0.0
+            late_mins_1 = 0.0
+            late_half_mins = 0.0
+            late_half_days = 0.0
+            total_late = 0.0
+            total_late_mins = 0.0
+            bonus_for_att_marks = 0.0
+            bonus_for_late_marks = 0.0
+            ot_days = 0.0
+            tra_days = 0.0
+            ot_hours = 0.0
+            att_bns_before = 0.0
+            att_bns_after = 0.0
+            leaves = 0.0
+
+            leave_found = False
+            bot_days = 0.0
+            botm = 0.0
+            otm = 0.0
+            bot_hours = 0.0
+            for day in range(0,nb_of_days):
+                leave_found = False
+                w_day = day_from + timedelta(days=day)
+                roster_line_ids = roster_line_obj.search(cr,uid,[('contract_id','=',contract.id),('date_from','<=', w_day),('date_to','>=',w_day)])
+                if roster_line_ids:
+                    # from_zone = tz.gettz('UTC +00')
+                    # to_zone = tz.gettz('Asia/Rangoon')
+
+                    roster_line = roster_line_obj.browse(cr,uid,roster_line_ids[0])
+                    shift = roster_line.get_shift_id_by_day(w_day.day)
+                    year = w_day.year
+                    month = w_day.month
+
+                    # leave_ids = leave_obj.search(cr, uid, [('employee_id','=',contract.employee_id.id),('date_from','<=', str(w_day)),('date_to','>=',str(w_day))])
+                    l_f_date = (str(w_day).split(' ')[0] + ' 23:59:59')
+                    # print l_f_date
+                    leave_ids = leave_obj.search(cr, uid, [('employee_id','=',contract.employee_id.id),('date_from','<=', l_f_date),('date_to','>=',str(w_day))])
+                    if leave_ids:
+
+                        bonus_for_att_marks += 1
+
+                        # print bonus_for_att_marks
+                        # print "Leave Found"
+                        leave_found = True
+                        leave = leave_obj.browse(cr, uid, leave_ids)
+
+                        if w_day.day >= day_from.day or w_day.day <= 10:
+                            # 2017/11/21 Change because of sometime esi use duplicated days
+                            # Example : 25/09 to 25/10 in payroll period
+                            if w_day.month == day_from.month:
+                                att_bns_before += 1.0
+                            else:
+                                att_bns_after += 1.0
+                        else:
+                            att_bns_after += 1.0
+
+                        if leave.holiday_status_id.name == 'Unpaid':
+                          # print "Unpaid Found"
+                          if leave.number_of_days_temp < 1:
+                              leaves += leave.number_of_days_temp
+                              half_leave = True
+                          else:
+                              leaves += 1
+
+                    # print 'leaves : ' + str(leaves)
+
+                    sql = "SELECT name,submit_time FROM hr_esi_attendance WHERE EXTRACT(YEAR FROM name)=%s"
+                    sql = sql + "AND EXTRACT(MONTH FROM name)=%s AND EXTRACT(DAY FROM name)=%s AND employee=%s AND action=%s ORDER BY submit_time"
+                    ### To add ygn time zone to date form database
+
+                    cr.execute(sql, (year, month, w_day.day, contract.employee_id.id, 'sign_in'))
+                    sign_in = cr.fetchall()
+                    if len(sign_in) > 0:
+                        #print "Signed In"
+                        tra_days += 1
+                        start_time = sign_in[0][1]
+#                         print 's_time before check ' + str(start_time)
+#                         s_time = round(round(round(start_time,2) % 1,2) * 60) #round(int(str(start_time-int(start_time)).split('.')[1]) * 60 * 0.01) * 10
+#                         print s_time
+#                         if s_time > 30:
+#                           #if s_time > 45:
+#                           start_time = int(start_time) + 1
+#                           #else:
+#                           #  start_time = int(start_time) + 0.5
+#                         else:
+#                           #if s_time > 15:
+#                           start_time = int(start_time) + 0.5
+#                           #else:
+#                           #  start_time = int(start_time)
+#                         print 's_time after check ' + str(start_time)
+#                         print '#'
+
+                        sql = "SELECT name,submit_time FROM hr_esi_attendance WHERE EXTRACT(YEAR FROM name)=%s"
+                        sql = sql + "AND EXTRACT(MONTH FROM name)=%s AND EXTRACT(DAY FROM name)=%s AND employee=%s AND action=%s ORDER BY submit_time DESC"
+                        cr.execute(sql, (year, month, w_day.day, contract.employee_id.id, 'sign_out'))
+                        sign_out = cr.fetchall()
+                        if sign_out:
+                            #print "Signed Out"
+                            end_time = sign_out[0][1]
+#                             print 'e_time before check ' + str(end_time)
+#                             e_time = round(round(round(end_time,2) % 1,2) * 60) #round(int(str(end_time-int(end_time)).split('.')[1]) * 60 * 0.01) * 10
+#                             print e_time
+#                             if e_time < 30:
+#                               end_time = int(end_time)
+#                             else:
+#                               # plus .30
+#                               if e_time > 50:
+#                                 end_time = int(end_time) + 1
+#                               else:
+#                                 end_time = int(end_time) + 0.5
+#                             print 'e_time after check ' + str(end_time)
+#                             print '#'
+                        else:
+                            end_time = shift.time_end
+                        worked_days += 1
+                        wk_hr = end_time - start_time
+                        if wk_hr < 0:
+                            wk_hr = wk_hr + 24
+
+                        worked_hours += wk_hr
+                        #if start_time > shift.time_start:
+                        #    late_days = late_days + 1
+                        #    late_mins = late_mins + (start_time - shift.time_start)
+
+                        # 7 min free time
+                        f_time = shift.time_start + 0.1
+                        start_time = round(start_time,2)
+                        if f_time < start_time:
+                          t_diff = round(start_time - f_time,2)
+                          if t_diff <= 0.15:
+                            late_days_15 += 1
+                            late_mins_15 += t_diff #0.167
+                            total_late += 1
+                          elif t_diff <= 1.0:
+                            late_days_1 += 1
+                            late_mins_1 += t_diff #1
+                            total_late += 1
+                          else:
+                            worked_hours -= 4.0
+                            late_half_days += 1
+                            late_half_mins += 4.0
+                            total_late += 1
+
+                        if not leave_found:
+                            if shift.code == 'SSS': ### IF IT'S SUN SHIFT
+                                print 'SUNDAY'
+                                otm = round(end_time - start_time,2)
+                                if otm <= 0: ### IF SHIFT START AND END DIFFERENT DAY
+                                    otm = otm + 24
+                                ot_days = ot_days + 1
+                                ends_t = 4.0 + shift.time_break
+                                if otm > ends_t: ### IF OT GREATER THAN 4 AND BREAK
+                                    otm = otm - shift.time_break
+                                ot_hours = ot_hours + otm
+
+                                botm = 0
+                            elif shift.code !=False  and shift.code[0] == 'S': ### IF IT'S SAT SHIFT
+                                print 'SATURDAY'
+                                if end_time < shift.time_end:
+                                    end_time = end_time + 24
+                                if end_time > (shift.time_end + shift.time_break):
+                                    print end_time
+                                    otm = round(end_time - shift.time_end - shift.time_break,2)
+                                    ot_days = ot_days + 1
+                                    ot_hours = ot_hours + otm
+
+                                # BEFORE OT HOURS
+                                if start_time < shift.time_start:
+                                  print 'BOT ' + str(shift.time_start - start_time)
+                                  if shift.time_start - start_time >= 1:
+                                      print '---------'
+                                      print start_time
+                                      print shift.time_start
+                                      botm = round(shift.time_start - start_time,2)
+                                      print botm
+                                      print '---------'
+                                      bot_days = bot_days + 1
+                                      bot_hours = bot_hours + botm
+                            else:
+                                if end_time > (shift.time_end):
+                                    # Normal OT
+                                    eb_time = shift.time_end + shift.time_break
+                                    end_time = round(end_time,2)
+
+                                    #otm = round(end_time - shift.time_end - shift.time_break,2)
+                                    print ' +++++++++ shift.time_end  +++++++++' + str(end_time)
+                                    #0.17
+                                    tmp_time = round(eb_time + 0.167,2)
+                                    print '+++++'
+                                    print tmp_time
+                                    print end_time
+                                    print '+++++'
+                                    ot_time = 0.0
+                                    # check equal
+                                    while(tmp_time <= end_time):
+                                      print tmp_time
+                                      tmp_time += 0.167
+                                      ot_time += 0.167
+
+                                    print 'ot_time ' + str(round(ot_time,2))
+
+                                    shift.time_end
+                                    ot_days = ot_days + 1
+                                    ot_hours = ot_hours + ot_time #otm
+
+                                # BEFORE OT HOURS
+                                if start_time < shift.time_start:
+                                  print 'BOT ' + str(shift.time_start - start_time)
+                                  if shift.time_start - start_time >= 1:
+                                      print '---------'
+                                      print start_time
+                                      print shift.time_start
+                                      botm = round(shift.time_start - start_time,2)
+                                      print botm
+                                      print '---------'
+                                      bot_days = bot_days + 1
+                                      bot_hours = bot_hours + botm
+
+                        print "BOT HOUR : " + str(botm)
+                        print "AOT HOUR : " + str(otm)
+                        print '----------------------'
+                        print "TOTAL OT : " + str(ot_hours)
+                        print '----------------------'
+                        print ''
+
+                    else:
+                      print '----------------------'
+                      print "NO SIGN IN AND OUT"
+                      print '----------------------'
+                      print ''
+
+            total_late_mins = late_mins_15 + late_mins_1
+            print 'total_late_mins ' + str(total_late_mins)
+
+            attendances['number_of_days'] = nb_of_days - leaves
+            attendances['number_of_hours'] = worked_hours - total_late_mins
+            travel_all['number_of_days'] = tra_days
+            res += [actual_days]
+            res += [attendances]
+
+            if late_days_15 >= 0:
+                lates_15['number_of_days'] = late_days_15
+                lates_15['number_of_hours'] = late_mins_15
+                res += [lates_15]
+            if late_days_1 >= 0:
+                lates_1['number_of_days'] = late_days_1
+                lates_1['number_of_hours'] = late_mins_1
+                res += [lates_1]
+            if late_half_days >= 0:
+                lates_half['number_of_days'] = late_half_days
+                lates_half['number_of_hours'] = late_half_mins
+                res += [lates_half]
+            if ot_days >= 0:
+                over_time['number_of_days'] = ot_days
+                print "OT HOUR : " + str(ot_hours)
+                over_time['number_of_hours'] = round(ot_hours,0)
+                res += [over_time]
+
+            print '########### ' + str(bonus_for_att_marks)
+            bonus_att_marks['number_of_days'] = bonus_for_att_marks
+            res += [bonus_att_marks]
+
+            if total_late > 3:
+              bonus_for_late_marks = total_late % 3
+              print 'bonus_late_marks ' + str(bonus_late_marks)
+
+            bonus_late_marks['number_of_hours'] = bonus_for_late_marks
+            res += [bonus_late_marks]
+
+            # BEFORE OT HOURS
+            before_over_time['number_of_days'] = bot_days
+            print "Before OT HOUR : " + str(bot_hours)
+            before_over_time['number_of_hours'] = round(bot_hours,0)
+            res += [before_over_time]
+
+            att_bonus_before['number_of_days'] = att_bns_before
+            att_bonus_after['number_of_days'] = att_bns_after
+            res += [att_bonus_before]
+            res += [att_bonus_after]
+            res += [travel_all]
+            print res
+        return res

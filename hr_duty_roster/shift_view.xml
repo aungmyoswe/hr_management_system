@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<record id="view_hr_shift_form" model="ir.ui.view">
+			<field name="name">HR Shift Form</field>
+			<field name="model">hr.employee.shift</field>
+			<field name="arch" type="xml">
+				<form string="Shift">
+					<sheet>						
+						<group>							
+							<field name="name"/>
+							<field name="code"/>
+							<field name="time_start" widget="float_time" string="Start Time"/>
+							<field name="time_end" widget="float_time" string="End Time"/>
+							<field name="time_break" widget="float_time" string="Break Time"/>
+
+							<field name="eot_start" widget="float_time" string="Early OT Start Time"/>
+							<field name="eot_end" widget="float_time" string="Early OT End Time"/>
+							<field name="ot_start" widget="float_time" string="OT Start Time"/>
+							<field name="ot_end" widget="float_time" string="OT End Time"/>
+							<field name="late_start" widget="float_time" string="Late Start Time"/>
+							<field name="late_end" widget="float_time" string="Late Start Time"/>
+							<field name="early_out" widget="float_time" string="Early Out Time"/>
+
+							<field name="duration" widget="float_time" string="Duration"/>
+							<field name="description"/>
+						</group>						
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<record id="view_hr_shift_tree" model="ir.ui.view">
+			<field name="name">HR Shifts Tree</field>
+			<field name="model">hr.employee.shift</field>
+			<field name="arch" type="xml">
+				<tree string="Shift">
+					<field name="name"/>
+					<field name="code"/>
+					<field name="time_start" widget="float_time"/>
+					<field name="time_end" widget="float_time"/>
+					<field name="time_break" widget="float_time"/>		
+					<field name="duration"/>
+				</tree>
+			</field>
+		</record>
+		
+		<record id="action_hr_shift_view" model="ir.actions.act_window">
+			<field name="name">HR Shift</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">hr.employee.shift</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" ref="view_hr_shift_tree" />
+		</record>
+
+		<!-- Shift Group -->
+
+		<record id="view_hr_shiftgroup_form" model="ir.ui.view">
+			<field name="name">HR Shift Group Form</field>
+			<field name="model">dutyroster.shift.group</field>
+			<field name="arch" type="xml">
+				<form string="Shift Group">
+					<sheet>						
+						<group>							
+							<field name="name"/>
+							<!-- <field name="sat_shift_id"/> -->
+							<field name="note"/>
+						</group>						
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<record id="view_hr_shiftgroup_tree" model="ir.ui.view">
+			<field name="name">HR Shift Group Tree</field>
+			<field name="model">dutyroster.shift.group</field>
+			<field name="arch" type="xml">
+				<tree string="Shift Group">
+					<field name="name"/>
+					<!-- <field name="sat_shift_id"/> -->
+					<field name="note"/>
+				</tree>
+			</field>
+		</record>
+		
+		<record id="action_hr_shiftgroup_view" model="ir.actions.act_window">
+			<field name="name">Shift Group</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">dutyroster.shift.group</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" ref="view_hr_shiftgroup_tree" />
+		</record>
+
+		<!-- Shift Group -->
+
+		<!-- GroupDayoff -->
+
+		<record id="view_hr_groupdayoff_form" model="ir.ui.view">
+			<field name="name">HR Shift Group DayOff Form</field>
+			<field name="model">dutyroster.group.dayoff</field>
+			<field name="arch" type="xml">
+				<form string="Shift Group DayOff">
+					<sheet>						
+						<group>							
+							<field name="group_id"/>
+							<!-- <field name="date_from"/>
+							<field name="date_to"/> -->
+							<field name="date"/>
+							<field name="reason"/>
+						</group>						
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<record id="view_hr_groupdayoff_tree" model="ir.ui.view">
+			<field name="name">HR Shift Group DayOff Tree</field>
+			<field name="model">dutyroster.group.dayoff</field>
+			<field name="arch" type="xml">
+				<tree string="Shift Group DayOff">
+					<field name="group_id"/>
+					<!-- <field name="date_from"/>
+					<field name="date_to"/> -->
+					<field name="date"/>
+					<field name="reason"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="view_hr_groupdayoff_filter" model="ir.ui.view">
+		    <field name="name">HR Shift Group DayOff Filter</field>
+		    <field name="model">dutyroster.group.dayoff</field>
+		    <field name="arch" type="xml">
+			 <search string="Shift Group DayOff">
+			 	<group expand="0" string="Group By">
+                    <filter name="group_name" string="Group" icon="terp-personal" domain="[]" context="{'group_by':'group_id'}"/>
+                    <filter name="group_year" string="Year" context="{'group_by':'date:year'}"/>
+                    <filter name="group_date" string="Month" context="{'group_by':'date:month'}"/>
+                </group>
+			 </search>
+		    </field>
+        	</record>
+		
+		<record id="action_hr_groupdayoff_view" model="ir.actions.act_window">
+			<field name="name">Shift Group DayOff</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">dutyroster.group.dayoff</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="search_view_id" ref="view_hr_groupdayoff_filter"/>
+            <field name="context">{
+                    'search_default_group_name': 1,
+                    'search_default_group_year': 1,
+                    'search_default_group_date': 1,
+                }
+            </field>
+			<field name="view_id" ref="view_hr_groupdayoff_tree" />
+		</record>
+
+		<!-- GroupDayoff -->
+
+		<menuitem id="hr_duty_roster_menu" name="Shift Management" parent="hr.menu_hr_root"
+		 sequence="1"/>
+		<menuitem action="action_hr_shift_view" id="hr_shift_menu"
+			parent="hr_duty_roster.hr_duty_roster_menu" name="Shifts" sequence="1" />
+
+		<menuitem id="hr_groupdayoff_configuration_menu" name="Shift Group" parent="hr.menu_hr_configuration" sequence="7" groups="base.group_hr_manager"/>
+		<menuitem id="hr_shiftgroup_menu" action="action_hr_shiftgroup_view" name="Shift Group" parent="hr_groupdayoff_configuration_menu" sequence="1" groups="base.group_hr_manager"/>
+		<menuitem id="hr_groupdayoff_menu" action="action_hr_groupdayoff_view" name="Shift Group DayOff" parent="hr_groupdayoff_configuration_menu" sequence="2" groups="base.group_hr_manager"/>
+
+	</data>
+</openerp>

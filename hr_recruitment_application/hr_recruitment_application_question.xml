@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<record id="view_hr_application_question_form" model="ir.ui.view">
+			<field name="name">HR Applicaation Question Form</field>
+			<field name="model">application.question</field>
+			<field name="arch" type="xml">
+				<form string="HR Applicaation Question">
+					<sheet>						
+						<group>
+							<group>
+								<field name="name" />
+							</group>
+						</group>						
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+
+		<record id="view_hr_application_question_tree" model="ir.ui.view">
+			<field name="name">HR Application Question Tree</field>
+			<field name="model">application.question</field>
+			<field name="arch" type="xml">
+				<tree string="HR Application Question">
+					<field name="name" />		
+				</tree>
+			</field>
+		</record>
+		
+		<record id="action_hr_application_question_view" model="ir.actions.act_window">
+			<field name="name">Application Question</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">application.question</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" ref="view_hr_application_question_tree" />
+		</record>
+
+		<menuitem id="hr_application_menu" name="Applications" parent="hr.menu_hr_configuration"
+		 sequence="5" groups="base.group_hr_manager"/>
+
+		<menuitem action="action_hr_application_question_view" id="hr_application_question_menu"
+			parent="hr_application_menu" name="Applications Question" sequence="1" />
+	</data>
+</openerp>

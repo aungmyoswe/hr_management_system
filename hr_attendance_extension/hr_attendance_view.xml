@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<record id="view_fingerprint_hr_attendance_form" model="ir.ui.view">
+            <field name="name">HR Attendance Form</field>
+            <field name="model">hr.fingerprint.attendance</field>
+            <field name="arch" type="xml">
+                <form string="Attendance">
+                    <!-- <head>
+                        <button name="attendance_check_create" string="Generate Check" type="object"/>
+                    </head> -->
+                    <sheet>                     
+                        <group>                         
+                            <group>
+                                <field name="name" required="1"/>
+                                <field name="submit_time" widget="float_time" required="1"/>
+                                <field name="action" required="1"/>
+                            </group>
+                            <group>
+                                <field name="fingerprint_id"/>
+                                <field name="employee"/>
+                                <field name="department_name" />
+                            </group>
+                        </group>
+                        <field name="reason" nolabel="1" placeholder="Any Reason !"/>                 
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="view_fingerprint_hr_attendance_tree" model="ir.ui.view">
+            <field name="name">HR Attendance Tree</field>
+            <field name="model">hr.fingerprint.attendance</field>
+            <field name="arch" type="xml">
+                <tree string="Attendance"  default_order='name desc'>
+                    <field name="name"/>
+                    <field name="department_name" />
+                    <field name="submit_time" widget="float_time"/>
+                    <field name="action"/>
+                    <field name="fingerprint_id"/>
+                    <field name="employee"/>      
+                    <field name="reason"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_fingerprint_hr_attendance_view" model="ir.actions.act_window">
+            <field name="name">Attendance</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">hr.fingerprint.attendance</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_fingerprint_hr_attendance_tree" />
+        </record>
+        
+        <record model="ir.ui.view" id="view_hr_attendance_filter">
+            <field name="name">report_daily_attendance_filter</field>
+            <field name="model">hr.fingerprint.attendance</field>
+            <field name="arch" type="xml">
+                <search string="Hr Attendance Search">
+                    <group string="Filter" >
+                        <filter string="Late" name="late"  domain="[('submit_time','&gt;', 8.75),('action','=','sign_in')]" help="Filter employee's late greater than 8:45"/>
+                    </group>
+                    <group string="Group By" >
+                            <field name="employee" string="Employee" filter_domain="[('employee','ilike',self)]"/>
+                            <field name="name" string="Date From" filter_domain="[('name','&gt;=',self)]"/>
+                            <field name="name" string="Date To" filter_domain="[('name','&lt;=',self)]"/>
+                            <field name="department_name" string="Department" filter_domain="[('department_name','ilike',self)]"/>
+                            <filter string="Employee" icon="terp-personal" domain="[]" context="{'group_by': 'employee'}"/>
+                            <filter string="Department" icon="terp-personal" domain="[]" context="{'group_by': 'department_name'}"/>
+                             <filter string="Date"  domain="[]" context="{'group_by': 'name'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Attendance Detail Report -->
+
+        <record id="view_hr_attendance_detail_form" model="ir.ui.view">
+            <field name="name">HR Attendance Detail Form</field>
+            <field name="model">hr.attendance.detail</field>
+            <field name="arch" type="xml">
+                <form string="Attendance Detail Form">
+                    <sheet>     
+                    <group>                
+                        <group>                    
+                            <field name="enrollnumber"/>
+                            <field name="location"/>
+                            <field name="employeecode"/>
+                            <field name="employeename"/>
+                            <field name="calculateddate"/>
+                            <field name="shiftcode"/>
+                            <field name="shiftname"/>
+                            <field name="dayin"/>
+                            <field name="dayout"/>
+                            <field name="intime"/>
+                            <field name="outtime"/>
+                            <!-- <field name="workinghours"/>
+                            <field name="earlyot"/>
+                            <field name="earlyout"/> -->
+                            <field name="attendance"/>
+                            <field name="leave"/>
+                            <field name="offday"/>
+                            <field name="absent"/>
+                            <field name="onduty"/>
+                            <field name="ontrip"/>
+                            <field name="late"/>
+                            <field name="ot"/>
+                            <field name="reason"/>
+                            <field name="remark"/>
+                        </group>    
+                        <group >
+                        </group>    
+                    </group>                
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_hr_attendance_detail_tree" model="ir.ui.view">
+            <field name="name">HR Attendance Detail Tree</field>
+            <field name="model">hr.attendance.detail</field>
+            <field name="arch" type="xml">
+                <tree string="Attendance Detail Tree" colors="
+                blue: leave == 1; 
+                red: absent == 1;
+                yellow: ontrip == 1;
+                orange: onduty == 1;
+                green: remark == 'Saturday';
+                green: remark == 'Sunday'">
+                    <field name="enrollnumber"/>
+                    <field name="location"/>
+                    <field name="employeecode"/>
+                    <field name="employeename"/>
+                    <field name="calculateddate"/>
+                    <field name="shiftcode"/>
+                    <field name="shiftname"/>
+                    <field name="dayin"/>
+                    <field name="dayout"/>
+                    <field name="intime"/>
+                    <field name="outtime"/>
+                    <!-- <field name="workinghours"/>
+                    <field name="earlyot"/>
+                    <field name="earlyout"/> -->
+                    <field name="attendance"/>
+                    <field name="leave"/>
+                    <field name="offday"/>
+                    <field name="absent"/>
+                    <field name="onduty"/>
+                    <field name="ontrip"/>
+                    <field name="late"/>
+                    <field name="ot"/>
+                    <field name="reason"/>
+                    <field name="remark"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_hr_attendance_detail_filter" model="ir.ui.view">
+            <field name="name">HR Attendance Detail Filter</field>
+            <field name="model">hr.attendance.detail</field>
+            <field name="arch" type="xml">
+                <search string="Hr Attendance Search">
+                    <field name="employee" string="Employee"/>
+                    <group expand="0" string="Group By">
+                        <filter name="location" string="Location" context="{'group_by':'location'}"/>
+                        <field name="calculateddate" string="Date From" filter_domain="[('calculateddate','&gt;=',self)]"/>
+                        <field name="calculateddate" string="Date To" filter_domain="[('calculateddate','&lt;=',self)]"/>
+
+                        <filter string="Year" icon="terp-personal" domain="[]" context="{'group_by':'calculateddate:year'}" name="year"/>
+                        <filter string="Month" icon="terp-personal" domain="[]" context="{'group_by':'calculateddate:month'}" name="month"/>
+                        <filter string="Employee" icon="terp-personal" domain="[]" context="{'group_by':'employee'}" name="employeename"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_view_hr_attendance_detail" model="ir.actions.act_window">
+            <field name="name">Attendance Detail Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">hr.attendance.detail</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{
+                    'search_default_year': 1,
+                    'search_default_month': 1,
+                    'search_default_employeename': 1,
+                }
+            </field>
+            <field name="view_id" ref="view_hr_attendance_detail_tree" />
+        </record>
+        <!-- -->
+
+        <menuitem id="hr_fingerprint_attendance_menu" name="Attendance" parent="hr.menu_hr_root"
+         sequence="2"/>
+        <menuitem action="action_fingerprint_hr_attendance_view" id="fingerprint_attendance_menu"
+            parent="hr_fingerprint_attendance_menu" name="Attendance" sequence="1" />
+
+        <menuitem action="action_view_hr_attendance_detail" id="attendance_detail_menu"
+            parent="hr_fingerprint_attendance_menu" name="Attendance Detail Report" sequence="4" />
+
+	</data>
+</openerp>

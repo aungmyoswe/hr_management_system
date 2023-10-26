@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data noupdate="1">
+
+    <record id="hr_employee_personal_access_rule" model="ir.rule">
+        <field name="name">Employee Personal Access</field>
+        <field name="model_id" ref="model_hr_employee"/>
+        <field name="domain_force">[('user_id','=',user.id)]</field>
+    </record>
+    <record id="hr_attendance_personal_access_rule" model="ir.rule">
+        <field name="name">Attendance Personal Access</field>
+        <field name="model_id" ref="hr_attendance_extension.model_hr_premium_attendance"/>
+        <field name="domain_force">[('employee.user_id','=',user.id)]</field>
+    </record>
+    <record id="hr_training_personal_access_rule" model="ir.rule">
+        <field name="name">Training Personal Access</field>
+        <field name="model_id" ref="hr_training.model_hr_training_record_line"/>
+        <field name="domain_force">[('employee.user_id','=',user.id)]</field>
+    </record>
+    <record id="hr_termination_personal_access_rule" model="ir.rule">
+        <field name="name">Termination Personal Access</field>
+        <field name="model_id" ref="termination.model_termination_line"/>
+        <field name="domain_force">[('employee.user_id','=',user.id)]</field>
+    </record>
+   
+</data>
+</openerp>

@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr.contract_employee_user,hr.contract_employee_user,employee_info_extension.model_hr_contract,base.group_user,True,False,False,False
+access_hr_contract_officer_user,hr.contract_officer_user,employee_info_extension.model_hr_contract,base.group_hr_user,True,True,True,True

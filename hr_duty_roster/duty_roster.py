@@ -1,0 +1,707 @@
+from openerp import fields, models, api, _
+from openerp.exceptions import ValidationError
+from datetime import datetime
+from datetime import timedelta
+from lxml import etree
+
+class DutyRoster(models.Model):
+    _name = "hr.employee.duty.roster"
+    
+    name = fields.Char("Name", required=True)
+    department_id = fields.Many2one("hr.department", string="Department")
+    date_from = fields.Date("From Date", required=True)
+    date_to = fields.Date("To Date", required=True)
+    description = fields.Text("Description")
+    # type = fields.Selection([('morning', 'Morning'),
+    #                         ('evermorning', 'EverMorning'),
+    #                         ('evening', 'Evening'),
+    #                         ('everevening', 'EverEvening'),
+    #                         ('night', 'Night'),
+    #                         ('office', 'Office')],string="Shift Group")
+    type = fields.Many2one('dutyroster.shift.group',string = "Shift Group")
+    sub_type = fields.Many2one('dutyroster.shift.group',string = "Sub Group")
+    shift_id = fields.Many2one('hr.employee.shift', string="Shift")
+    sat_shift_id = fields.Many2one('hr.employee.shift', string="Saturday Shift") #compute="_compute_show_shift_group"
+    employees = fields.One2many('hr.employee.duty.roster.line', 'roster_id', 'Employees', copy=True)
+    employees_2 = fields.One2many('hr.employee.duty.roster.line', 'roster_id', 'Employees', copy=True)
+    employees_3 = fields.One2many('hr.employee.duty.roster.line', 'roster_id', 'Employees', copy=True)
+    employees_4 = fields.One2many('hr.employee.duty.roster.line', 'roster_id', 'Employees', copy=True)
+    employees_5 = fields.One2many('hr.employee.duty.roster.line', 'roster_id', 'Employees', copy=True)
+    state = fields.Selection([('draft','Draft'),('close','Close')],'Status', select=True, readonly=True, copy=False)
+    _defaults = {'state' : 'draft'}
+    period = fields.Char('For', compute="_compute_label")
+    
+    shifts = fields.Html('Available Shift', compute='_get_available_shift')
+    
+    office_time = fields.Many2one('hr.employee.office.time',string = "Office Time")
+
+    show_week_1 = fields.Boolean('Week 1', compute="_compute_week")
+    show_week_2 = fields.Boolean('Week 1', compute="_compute_week")
+    show_week_3 = fields.Boolean('Week 1', compute="_compute_week")
+    show_week_4 = fields.Boolean('Week 1', compute="_compute_week")
+    show_week_5 = fields.Boolean('Week 1', compute="_compute_week")
+    #show_shift_group = fields.Boolean('Show Shift Group', compute="_compute_show_shift_group")
+
+    @api.model
+    def fields_view_getttt(self, view_id=None, view_type=False, toolbar=False, submenu=False):
+        context = self._context
+
+        def get_view_id(xid, name):
+            try:
+                return self.env['ir.model.data'].xmlid_to_res_id('view_hr_roster_' + xid, raise_if_not_found=True)
+            except ValueError:
+                try:
+                    return self.env['ir.ui.view'].search([('name', '=', name)], limit=1).id
+                except Exception:
+                    return False    # view not found
+
+        if not view_type:
+            view_id = get_view_id('tree', 'HR Duty Roster Tree')
+            view_type = 'tree'
+        else:
+            if view_type == 'form':
+                view_id = get_view_id('form', 'HR Duty Roster Form')
+
+        
+        res = super(DutyRoster, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
+
+        # adapt selection of field journal_id
+        # for field in res['fields']:
+        #     if field == 'journal_id' and context.get('journal_type'):
+        #         journal_select = self.env['account.journal']._name_search('', [('type', '=', context['journal_type'])], name_get_uid=1)
+        #         res['fields'][field]['selection'] = journal_select
+
+        doc = etree.XML(res['arch'])
+        print view_type
+        if view_type == 'form':
+            lbl_d1 = _('Day_1')
+            for node in doc.xpath("//field[@name='employees']/tree/field[@name='contract_id']"):
+                print node
+                node.set('string', lbl_d1)            
+
+        res['arch'] = etree.tostring(doc)
+        return res
+
+    @api.depends('description')
+    def _get_available_shift(self):
+        shift_obj = self.pool.get('hr.employee.shift')
+        shift_ids = shift_obj.search(self.env.cr,self.env.uid,[])
+        temp = ""
+        for s in shift_obj.browse(self.env.cr,self.env.uid,shift_ids):
+            temp += " <tr>" + " <td> &nbsp; " + s.name +" &nbsp; </td> " + " <td> &nbsp; " + s.code +" &nbsp; </td> " + " <td> &nbsp; " + str(s.time_start) +" &nbsp;  </td> " + " <td> &nbsp; " + str(s.time_end) +" &nbsp; </td> " + " </tr> "  
+        self.shifts = temp
+
+    @api.one
+    @api.constrains('date_from','date_to')
+    def _check_dates(self):
+        if self.date_from and self.date_to:
+            date_format = "%Y-%m-%d"
+            date_start = datetime.strptime(self.date_from,date_format)
+            date_end = datetime.strptime(self.date_to,date_format)        
+            if date_end < date_start:
+                raise ValidationError('To date must be greater than From date!')
+            if date_start.month == 2:
+                if date_start.year % 4 == 0:
+                    max_days = 29
+                else:
+                    max_days = 28
+            elif date_start.month in [4,6,9,11]:
+                max_days = 30
+            else:
+                max_days = 31
+            if (date_end - date_start).days >= max_days:
+                raise ValidationError('Shift can not assign more than one month!')
+    
+    @api.depends('date_from','date_to')
+    def _compute_week(self):
+        if self.date_from and self.date_to:
+            date_format = "%Y-%m-%d"
+            date_start = datetime.strptime(self.date_from,date_format)
+            date_end = datetime.strptime(self.date_to,date_format)
+            start_day = date_start.day
+            end_day = date_end.day            
+            diff_days = (date_end - date_start).days
+            if diff_days == 0:
+                diff_days = 1
+            
+            self.show_week_1 = False
+            self.show_week_2 = False
+            self.show_week_3 = False
+            self.show_week_4 = False
+            self.show_week_5 = False
+            
+            for i in range(1, diff_days+1):
+                day = (date_start + timedelta(days=i)).day
+                if day in range(1,8):
+                    self.show_week_1 = True
+                if day in range(8,15):
+                    self.show_week_2 = True
+                if day in range(15,22):
+                    self.show_week_3 = True
+                if day in range(22,29):
+                    self.show_week_4 = True
+                if day in range(29,32):
+                    self.show_week_5 = True
+            
+    @api.depends('date_from','date_to')
+    def _compute_label(self):
+        if self.date_from and self.date_to:
+            date_format = "%Y-%m-%d"            
+            date_start = datetime.strptime(self.date_from,date_format)
+            date_end = datetime.strptime(self.date_to,date_format)
+            str_ds = date_start.strftime('%d')
+            str_ms = date_start.strftime('%b')
+            str_de = date_end.strftime('%d')
+            str_me = date_end.strftime('%b')
+            self.period = 'From %s-%s to %s-%s' % (str_ms,str_ds,str_me,str_de)
+    
+    def calculate_shift_ids(self, cr, uid, line_vals, shift_id, group_id, sat_shift_id, date_from, date_to,sunday_shift):
+        print 'calculate_shift_ids '
+        public_holiday_obj = self.pool.get('hr.public.holiday')
+        group_dayoff_obj = self.pool.get('dutyroster.group.dayoff')
+        print 'group_id ' + str(group_id)
+
+        if not line_vals:
+            line_vals = {}
+#         print line_vals
+        if date_from and date_to:
+            date_format = "%Y-%m-%d"
+            print 'date_from ' + str(date_from)
+            date_start = datetime.strptime(date_from,date_format)
+            date_end = datetime.strptime(date_to,date_format)
+            print 'date_start ' + str(date_start)
+#             print date_end
+            for i in range(1,32):
+                print 'here ' + str(i)
+                start = str(date_start).split(' ')[0]
+                print 'start ' + str(start)
+                public_holiday = public_holiday_obj.search(cr, uid,[('date_from','<=', start),('date_to','>=', start)])
+                print 'public_holiday ' + str(public_holiday)
+
+                if group_id:
+                    print 'is_group'
+                    group_dayoff = group_dayoff_obj.search(cr, uid,[('group_id','=', group_id.id),('date','=', start)])
+                    print 'group_dayoff ' + str(group_dayoff)
+
+                print 'date_start ' + str(date_start)
+                #raise ValidationError(' ')
+                str_shift = 'shift_id_' + str(date_start.day)
+#                 print str_shift
+
+                if group_dayoff:
+                    print '>>> dayoff by group'
+                    line_vals[str_shift] = sunday_shift
+                elif date_start.strftime("%A") == 'Saturday':
+                    line_vals[str_shift] = sat_shift_id
+                elif date_start.strftime("%A") == 'Sunday':
+                    print '>>> dayoff by sunday'
+                    line_vals[str_shift] = sunday_shift
+                elif public_holiday:
+                    print '>>> dayoff by public holiday'
+                    line_vals[str_shift] = sunday_shift
+                else:
+                    line_vals[str_shift] = shift_id
+    
+                if(date_start >= date_end):
+                    break
+                date_start = date_start + timedelta(days=1)
+#         print line_vals
+        return line_vals
+                
+    def compute(self, cr, uid, ids, context=None):
+        roster_line_obj = self.pool.get('hr.employee.duty.roster.line')
+        contract_obj = self.pool.get('hr.contract')
+        employee_obj = self.pool.get('hr.employee')
+        sequence_obj = self.pool.get('ir.sequence')
+        shift_obj = self.pool.get('hr.employee.shift')
+        shift_group_obj = self.pool.get('dutyroster.shift.group')
+        for roster in self.browse(cr, uid, ids, context=context):
+#             delete old lines
+            old_line_ids = roster_line_obj.search(cr, uid, [('roster_id', '=', roster.id)], context=context)
+#            old_line_ids
+            if old_line_ids:
+                roster_line_obj.unlink(cr, uid, old_line_ids, context=context)
+            
+#             emp_ids = employee_obj.search(cr,uid,[('department_id','=',roster.department_id.id)])
+            # Sub Group Temp Remove
+            # if roster.type and roster.office_time and roster.sub_type:
+            #     print 'office time'
+            #     contract_ids = contract_obj.search(cr,uid,[('department_id','=',roster.department_id.id),
+            #                                           ('shift_type','=',roster.type.id),('sub_shift_type','=',roster.sub_type.id),('office_time.code','=',roster.office_time.code)])   
+            # elif roster.type and roster.sub_type:
+            #     print 'shift type'  + str(roster.type)
+            #     print 'sub type'  + str(roster.sub_type)
+            #     print 'department'  + str(roster.department_id)
+            #     contract_ids = contract_obj.search(cr,uid,[('department_id','=',roster.department_id.id),
+            #                                           ('shift_type','=',roster.type.id),('sub_shift_type','=',roster.sub_type.id)])
+
+            if roster.type and roster.office_time:
+                print 'office time'
+                contract_ids = contract_obj.search(cr,uid,[('department_id','=',roster.department_id.id),
+                                                      ('shift_type','=',roster.type.id),('office_time.code','=',roster.office_time.code)])   
+            elif roster.type:
+                print 'shift type'  + str(roster.type)
+                print 'department'  + str(roster.department_id)
+                contract_ids = contract_obj.search(cr,uid,[('department_id','=',roster.department_id.id),
+                                                      ('shift_type','=',roster.type.id)])
+            else:
+                contract_ids = contract_obj.search(cr,uid,[('department_id','=',roster.department_id.id)])
+                          
+            sunday_shift = shift_obj.search(cr,uid,[('code', '=','SSS')])
+              
+            for contract_id in contract_ids:
+                line_vals = {'roster_id':roster.id,
+                             'contract_id':contract_id,
+                             }
+                line_vals = self.calculate_shift_ids(cr, uid, line_vals, roster.shift_id.id, roster.type, roster.sat_shift_id.id, roster.date_from, roster.date_to, sunday_shift[0])
+                roster_line_obj.create(cr,uid,line_vals,context)
+            line_ids = roster_line_obj.search(cr,uid,[('roster_id','=',roster.id)])
+            line_ids = roster_line_obj.browse(cr,uid,line_ids)
+            self_vals = {'employees':line_ids,
+                    'employees_2':line_ids,
+                    'employees_3':line_ids,
+                    'employees_4':line_ids,
+                    'employees_5':line_ids,
+                    }    
+            self.write(cr, uid, [roster.id], self_vals, context=context)            
+        return True
+
+    # @api.one
+    # @api.onchange('type')
+    # def _compute_show_shift_group(self):
+    #     print '_compute_show_shift_group work'
+    #     if self.type:
+    #         shift_group_obj = self.pool.get('dutyroster.shift.group')
+    #         sat_id = shift_group_obj.browse(self.env.cr, self.env.uid, self.type.id)
+    #         print 'sat_id ' + str(sat_id)
+    #         print sat_id.sat_shift_id
+    #         self.sat_shift_id = sat_id.sat_shift_id.id
+
+    # @api.one
+    # @api.onchange('type')
+    # def _compute_show_shift_group(self):
+    #     print '_compute_show_shift_group work'
+    #     if self.type:
+    #         s = self.type.name
+    #         print 'type ' + str(s)
+    #         if "Office" in s:
+    #             self.show_shift_group = True
+    #         else:
+    #             self.show_shift_group = False
+
+class DutyRosterLine(models.Model):
+    _name = "hr.employee.duty.roster.line"
+    
+    roster_id = fields.Many2one('hr.employee.duty.roster', string="Duty Roster", ondelete="Cascade")
+    contract_id = fields.Many2one('hr.contract', string="Employee", ondelete="Cascade")
+     
+    shift_id_1 = fields.Many2one('hr.employee.shift', string="D-1")
+    shift_id_2 = fields.Many2one('hr.employee.shift', string="D-2")
+    shift_id_3 = fields.Many2one('hr.employee.shift', string="D-3")
+    shift_id_4 = fields.Many2one('hr.employee.shift', string="D-4")
+    shift_id_5 = fields.Many2one('hr.employee.shift', string="D-5")
+    shift_id_6 = fields.Many2one('hr.employee.shift', string="D-6")
+    shift_id_7 = fields.Many2one('hr.employee.shift', string="D-7")
+    shift_id_8 = fields.Many2one('hr.employee.shift', string="D-8")
+    shift_id_9 = fields.Many2one('hr.employee.shift', string="D-9")
+    shift_id_10 = fields.Many2one('hr.employee.shift', string="D-10")
+    shift_id_11 = fields.Many2one('hr.employee.shift', string="D-11")
+    shift_id_12 = fields.Many2one('hr.employee.shift', string="D-12")
+    shift_id_13 = fields.Many2one('hr.employee.shift', string="D-13")
+    shift_id_14 = fields.Many2one('hr.employee.shift', string="D-14")
+    shift_id_15 = fields.Many2one('hr.employee.shift', string="D-15")
+    shift_id_16 = fields.Many2one('hr.employee.shift', string="D-16")
+    shift_id_17 = fields.Many2one('hr.employee.shift', string="D-17")
+    shift_id_18 = fields.Many2one('hr.employee.shift', string="D-18")
+    shift_id_19 = fields.Many2one('hr.employee.shift', string="D-19")
+    shift_id_20 = fields.Many2one('hr.employee.shift', string="D-20")
+    shift_id_21 = fields.Many2one('hr.employee.shift', string="D-21")
+    shift_id_22 = fields.Many2one('hr.employee.shift', string="D-22")
+    shift_id_23 = fields.Many2one('hr.employee.shift', string="D-23")
+    shift_id_24 = fields.Many2one('hr.employee.shift', string="D-24")
+    shift_id_25 = fields.Many2one('hr.employee.shift', string="D-25")
+    shift_id_26 = fields.Many2one('hr.employee.shift', string="D-26")
+    shift_id_27 = fields.Many2one('hr.employee.shift', string="D-27")
+    shift_id_28 = fields.Many2one('hr.employee.shift', string="D-28")
+    shift_id_29 = fields.Many2one('hr.employee.shift', string="D-29")
+    shift_id_30 = fields.Many2one('hr.employee.shift', string="D-30")
+    shift_id_31 = fields.Many2one('hr.employee.shift', string="D-31")
+    
+    show_shift_1 = fields.Boolean('Shift 1', compute="_compute_shift1")
+    show_shift_2 = fields.Boolean('Shift 2', compute="_compute_shift2")
+    show_shift_3 = fields.Boolean('Shift 3', compute="_compute_shift3")
+    show_shift_4 = fields.Boolean('Shift 4', compute="_compute_shift4")
+    show_shift_5 = fields.Boolean('Shift 5', compute="_compute_shift5")
+    show_shift_6 = fields.Boolean('Shift 6', compute="_compute_shift6")
+    show_shift_7 = fields.Boolean('Shift 7', compute="_compute_shift7")
+    show_shift_8 = fields.Boolean('Shift 8', compute="_compute_shift8")
+    show_shift_9 = fields.Boolean('Shift 9', compute="_compute_shift9")
+    show_shift_10 = fields.Boolean('Shift 10', compute="_compute_shift10")
+    show_shift_11 = fields.Boolean('Shift 11', compute="_compute_shift11")
+    show_shift_12 = fields.Boolean('Shift 12', compute="_compute_shift12")
+    show_shift_13 = fields.Boolean('Shift 13', compute="_compute_shift13")
+    show_shift_14 = fields.Boolean('Shift 14', compute="_compute_shift14")
+    show_shift_15 = fields.Boolean('Shift 15', compute="_compute_shift15")
+    show_shift_16 = fields.Boolean('Shift 16', compute="_compute_shift16")
+    show_shift_17 = fields.Boolean('Shift 17', compute="_compute_shift17")
+    show_shift_18 = fields.Boolean('Shift 18', compute="_compute_shift18")
+    show_shift_19 = fields.Boolean('Shift 19', compute="_compute_shift19")
+    show_shift_20 = fields.Boolean('Shift 20', compute="_compute_shift20")
+    show_shift_21 = fields.Boolean('Shift 21', compute="_compute_shift21")
+    show_shift_22 = fields.Boolean('Shift 22', compute="_compute_shift22")
+    show_shift_23 = fields.Boolean('Shift 23', compute="_compute_shift23")
+    show_shift_24 = fields.Boolean('Shift 24', compute="_compute_shift24")
+    show_shift_25 = fields.Boolean('Shift 25', compute="_compute_shift25")
+    show_shift_26 = fields.Boolean('Shift 26', compute="_compute_shift26")
+    show_shift_27 = fields.Boolean('Shift 27', compute="_compute_shift27")
+    show_shift_28 = fields.Boolean('Shift 28', compute="_compute_shift28")
+    show_shift_29 = fields.Boolean('Shift 29', compute="_compute_shift29")
+    show_shift_30 = fields.Boolean('Shift 30', compute="_compute_shift30")
+    show_shift_31 = fields.Boolean('Shift 31', compute="_compute_shift31")
+    
+    name = fields.Char(string='Duty Roster', related="roster_id.name", store=True)
+    department_id = fields.Many2one('hr.department', related="roster_id.department_id", store=True, string="Department")
+    # type = fields.Selection([('group-a', 'Group-A'),
+    #                          ('group-b', 'Group-B'),
+    #                          ('everday', 'EverDay'),
+    #                          ('office', 'Office')], related="roster_id.type", store=True, string="Shift Group")
+    type = fields.Many2one('dutyroster.shift.group', related="roster_id.type", store=True, string="Shift Group")
+    date_from = fields.Date(string='From Date', related="roster_id.date_from", store=True)
+    date_to = fields.Date(string='To Date', related="roster_id.date_to", store=True)
+    description = fields.Text(string='Description', related="roster_id.description", store=True)
+    period = fields.Char(related="roster_id.period")
+    show_week_1 = fields.Boolean(related="roster_id.show_week_1")
+    show_week_2 = fields.Boolean(related="roster_id.show_week_2")
+    show_week_3 = fields.Boolean(related="roster_id.show_week_3")
+    show_week_4 = fields.Boolean(related="roster_id.show_week_4")
+    show_week_5 = fields.Boolean(related="roster_id.show_week_5")
+    
+    employee_id = fields.Many2one('hr.employee', related="contract_id.employee_id", readonly=True)
+    emp_name = fields.Char(string='Name', related="employee_id.name", store=True)
+    job_id = fields.Many2one('hr.job', related="contract_id.job_id", store=True)
+    emp_department = fields.Many2one('hr.department', related="contract_id.department_id", store=True, string="Department")
+
+#     @api.one
+#     @api.constrains('roster_id','employee_id')
+#     def _check_record_employee(self):
+#         records = self.env['hr.employee.duty.roster.line'].search([('roster_id','=',self.roster_id.id),('employee_id', '=' , self.employee_id.id)])                                   
+#         print str(self.roster_id.id) + ', ' + self.roster_id.name
+#         print str(self.employee_id.id) + ', ' + self.employee_id.name
+#         if len(records) >= 2:
+#             raise ValidationError('Duplicate record found for employee %s' % self.employee_id.name)
+    
+    @api.model
+    def get_shift_id_by_day(self,day):
+        if day==1:
+            return self.shift_id_1
+        elif day==2:
+            return self.shift_id_2
+        elif day==3:
+            return self.shift_id_3
+        elif day==4:
+            return self.shift_id_4
+        elif day==5:
+            return self.shift_id_5
+        elif day==6:
+            return self.shift_id_6
+        elif day==7:
+            return self.shift_id_7
+        elif day==8:
+            return self.shift_id_8
+        elif day==9:
+            return self.shift_id_9
+        elif day==10:
+            return self.shift_id_10
+        elif day==11:
+            return self.shift_id_11
+        elif day==12:
+            return self.shift_id_12
+        elif day==13:
+            return self.shift_id_13
+        elif day==14:
+            return self.shift_id_14
+        elif day==15:
+            return self.shift_id_15
+        elif day==16:
+            return self.shift_id_16
+        elif day==17:
+            return self.shift_id_17
+        elif day==18:
+            return self.shift_id_18
+        elif day==19:
+            return self.shift_id_19
+        elif day==20:
+            return self.shift_id_20
+        elif day==21:
+            return self.shift_id_21
+        elif day==22:
+            return self.shift_id_22
+        elif day==23:
+            return self.shift_id_23
+        elif day==24:
+            return self.shift_id_24
+        elif day==25:
+            return self.shift_id_25
+        elif day==26:
+            return self.shift_id_26
+        elif day==27:
+            return self.shift_id_27
+        elif day==28:
+            return self.shift_id_28
+        elif day==29:
+            return self.shift_id_29
+        elif day==30:
+            return self.shift_id_30
+        elif day==31:
+            return self.shift_id_31
+        else:
+            return 'Bigger than 31'
+        
+    @api.one
+    @api.depends('shift_id_1')
+    def _compute_shift1(self):
+        if self.shift_id_1:
+            self.show_shift_1 = True
+        else:
+            self.show_shift_1 = False
+    
+    @api.one
+    @api.depends('shift_id_2')
+    def _compute_shift2(self):
+        if self.shift_id_2:
+            self.show_shift_2 = True
+        else:
+            self.show_shift_2 = False
+            
+    @api.one
+    @api.depends('shift_id_3')
+    def _compute_shift3(self):
+        if self.shift_id_3:
+            self.show_shift_3 = True
+        else:
+            self.show_shift_3 = False
+                
+    @api.one
+    @api.depends('shift_id_4')
+    def _compute_shift4(self):
+        if self.shift_id_4:
+            self.show_shift_4 = True
+        else:
+            self.show_shift_4 = False
+    
+    @api.one
+    @api.depends('shift_id_5')
+    def _compute_shift5(self):
+        if self.shift_id_5:
+            self.show_shift_5 = True
+        else:
+            self.show_shift_5 = False
+            
+    @api.one
+    @api.depends('shift_id_6')
+    def _compute_shift6(self):
+        if self.shift_id_6:
+            self.show_shift_6 = True
+        else:
+            self.show_shift_6 = False
+    
+    @api.one
+    @api.depends('shift_id_7')
+    def _compute_shift7(self):
+        if self.shift_id_7:
+            self.show_shift_7 = True
+        else:
+            self.show_shift_7 = False
+            
+    @api.one
+    @api.depends('shift_id_8')
+    def _compute_shift8(self):
+        if self.shift_id_8:
+            self.show_shift_8 = True
+        else:
+            self.show_shift_8 = False
+    
+    @api.one
+    @api.depends('shift_id_9')
+    def _compute_shift9(self):
+        if self.shift_id_9:
+            self.show_shift_9 = True
+        else:
+            self.show_shift_9 = False
+            
+    @api.one
+    @api.depends('shift_id_10')
+    def _compute_shift10(self):
+        if self.shift_id_10:
+            self.show_shift_10 = True
+        else:
+            self.show_shift_10 = False
+    
+    @api.one
+    @api.depends('shift_id_11')
+    def _compute_shift11(self):
+        if self.shift_id_11:
+            self.show_shift_11 = True
+        else:
+            self.show_shift_11 = False
+    
+    @api.one
+    @api.depends('shift_id_12')
+    def _compute_shift12(self):
+        if self.shift_id_12:
+            self.show_shift_12 = True
+        else:
+            self.show_shift_12 = False
+            
+    @api.one
+    @api.depends('shift_id_13')
+    def _compute_shift13(self):
+        if self.shift_id_13:
+            self.show_shift_13 = True
+        else:
+            self.show_shift_13 = False
+
+    @api.one
+    @api.depends('shift_id_14')
+    def _compute_shift14(self):
+        if self.shift_id_14:
+            self.show_shift_14 = True
+        else:
+            self.show_shift_14 = False
+    
+    @api.one
+    @api.depends('shift_id_15')
+    def _compute_shift15(self):
+        if self.shift_id_15:
+            self.show_shift_15 = True
+        else:
+            self.show_shift_15 = False
+            
+    @api.one
+    @api.depends('shift_id_16')
+    def _compute_shift16(self):
+        if self.shift_id_16:
+            self.show_shift_16 = True
+        else:
+            self.show_shift_16 = False
+    
+    @api.one
+    @api.depends('shift_id_17')
+    def _compute_shift17(self):
+        if self.shift_id_17:
+            self.show_shift_17 = True
+        else:
+            self.show_shift_17 = False
+    
+    @api.one
+    @api.depends('shift_id_18')
+    def _compute_shift18(self):
+        if self.shift_id_18:
+            self.show_shift_18 = True
+        else:
+            self.show_shift_18 = False
+            
+    @api.one
+    @api.depends('shift_id_19')
+    def _compute_shift19(self):
+        if self.shift_id_19:
+            self.show_shift_19 = True
+        else:
+            self.show_shift_19 = False    
+    
+    @api.one
+    @api.depends('shift_id_20')
+    def _compute_shift20(self):
+        if self.shift_id_20:
+            self.show_shift_20 = True
+        else:
+            self.show_shift_20 = False
+    
+    @api.one
+    @api.depends('shift_id_21')
+    def _compute_shift21(self):
+        if self.shift_id_21:
+            self.show_shift_21 = True
+        else:
+            self.show_shift_21 = False
+            
+    @api.one
+    @api.depends('shift_id_22')
+    def _compute_shift22(self):
+        if self.shift_id_22:
+            self.show_shift_22 = True
+        else:
+            self.show_shift_22 = False
+
+    @api.one
+    @api.depends('shift_id_23')
+    def _compute_shift23(self):
+        if self.shift_id_23:
+            self.show_shift_23 = True
+        else:
+            self.show_shift_23 = False
+    
+    @api.one
+    @api.depends('shift_id_24')
+    def _compute_shift24(self):
+        if self.shift_id_24:
+            self.show_shift_24 = True
+        else:
+            self.show_shift_24 = False
+            
+    @api.one
+    @api.depends('shift_id_25')
+    def _compute_shift25(self):
+        if self.shift_id_25:
+            self.show_shift_25 = True
+        else:
+            self.show_shift_25 = False
+    
+    @api.one
+    @api.depends('shift_id_26')
+    def _compute_shift26(self):
+        if self.shift_id_26:
+            self.show_shift_26 = True
+        else:
+            self.show_shift_26 = False
+    
+    @api.one
+    @api.depends('shift_id_27')
+    def _compute_shift27(self):
+        if self.shift_id_27:
+            self.show_shift_27 = True
+        else:
+            self.show_shift_27 = False
+            
+    @api.one
+    @api.depends('shift_id_28')
+    def _compute_shift28(self):
+        if self.shift_id_28:
+            self.show_shift_28 = True
+        else:
+            self.show_shift_28 = False
+    
+    @api.one
+    @api.depends('shift_id_29')
+    def _compute_shift29(self):
+        if self.shift_id_29:
+            self.show_shift_29 = True
+        else:
+            self.show_shift_29 = False
+    
+    @api.one
+    @api.depends('shift_id_30')
+    def _compute_shift30(self):
+        if self.shift_id_30:
+            self.show_shift_30 = True
+        else:
+            self.show_shift_30 = False
+            
+    @api.one
+    @api.depends('shift_id_31')
+    def _compute_shift31(self):
+        if self.shift_id_31:
+            self.show_shift_31 = True
+        else:
+            self.show_shift_31 = False
+            

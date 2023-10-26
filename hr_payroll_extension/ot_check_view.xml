@@ -1,0 +1,340 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>	
+
+		<record id="view_ot_check_tree" model="ir.ui.view">
+			<field name="name">OT Check Tree</field>
+			<field name="model">hr.ot_check</field>
+			<field name="arch" type="xml">
+				<tree string="Payslips Detail" colors="
+				red: wp == 'AB 1/2'; 
+				red: wp == 'AB';
+				blue: late_have == True;
+				orange: shift == 'SSS (0 -0 ) '; 
+				green: lh == True">
+					<field name="employee_id"/>
+					<field name="work_day" />
+					<field name="shift" />
+					<field name="in_out" />
+                    <field name="wd" />
+					<field name="ot" />
+					<field name="wp" />
+					<field name="l" />
+                    <field name="od" />
+					<field name="lh" invisible="1"/>
+					<field name="late_have" invisible="1"/>
+				</tree>
+			</field>
+		</record>
+
+        <record id="view_ot_check_employee_tree" model="ir.ui.view">
+            <field name="name">OT Check Tree</field>
+            <field name="model">hr.ot_check</field>
+            <field name="arch" type="xml">
+                <tree string="Payslips Detail" colors="
+                red: wp == 'WP 1/2'; 
+                red: wp == 'WP    ';
+                blue: late_have == True;
+                orange: shift == 'SSS (0 -0 ) '; 
+                green: lh == True">
+                    <field name="employee_id" invisible="1"/>
+                    <field name="work_day" />
+                    <field name="shift" />
+                    <field name="in_out" />
+                    <field name="wd" />
+                    <field name="ot" />
+                    <field name="wp" />
+                    <field name="l" />
+                    <field name="od" />
+                    <field name="lh" invisible="1"/>
+                    <field name="late_have" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+		
+		<record id="view_ot_check_filter" model="ir.ui.view">
+            <field name="name">Payslips Detail</field>
+            <field name="model">hr.ot_check</field>
+            <field name="arch" type="xml">
+                <search string="Search OT Check">
+                    <field name="slip_id"/>
+                     <group expand="0" string="Group By">
+                        <filter string="Year" icon="terp-personal" domain="[]" context="{'group_by':'date_to:year'}" name="year"/>
+                        <filter string="Month" icon="terp-personal" domain="[]" context="{'group_by':'date_to:month'}" name="month"/>
+                        <filter string="Parent Department" icon="terp-personal" domain="[]" context="{'group_by':'parent_department_id'}" name="parent_department_id"/>
+                        <filter string="Employee" icon="terp-personal" domain="[]" context="{'group_by':'employee_id'}" name="employee"/>
+                        
+                    </group>
+                </search>
+            </field>
+        </record>
+		
+		<act_window name="Payslip Calculation Details"
+            context="{'search_default_slip_id': active_id}"
+            res_model="hr.ot_check"
+            src_model="hr.payslip"
+            view_id="view_ot_check_tree"
+            id="act_hr_employee_payslip_list"/>
+
+        <record id="payroll_hr_employee_view_form_inh" model="ir.ui.view">
+            <field name="name">payroll.hr.employee.view.form</field>
+            <field name="model">hr.payslip</field>
+            <field name="inherit_id" ref="hr_payroll.view_hr_payslip_form"/>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//div[@class='oe_right oe_button_box']" position="inside">
+                        <button name="%(act_hr_employee_payslip_list)d"  
+                            class="oe_stat_button" 
+                            icon="fa-money" 
+                            type="action" 
+                            groups="base.group_user"
+                            string="Payslip Detail">
+                        </button>
+                    </xpath>
+                </data>
+            </field>
+        </record>
+		
+		<!-- Action -->
+		<record id="action_ot_check" model="ir.actions.act_window">
+			<field name="name">Payslips Detail</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">hr.ot_check</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+            <field name="context">{
+                    'search_default_year': 1,
+                    'search_default_month': 1,
+                    'search_default_parent_department_id': 1,
+                    'search_default_employee': 1,
+                }
+            </field>
+			<field name="view_id" ref="view_ot_check_employee_tree" />
+		</record>
+
+        <!-- Payslip Checking -->
+
+        <record id="view_payslip_checking_tree" model="ir.ui.view">
+            <field name="name">Payslip Checking Tree</field>
+            <field name="model">hr.payslip.checking</field>
+            <field name="arch" type="xml">
+                <tree string="Payslips Checking" colors="
+                blue: late_big >= 5; 
+                red: absent >= 5;
+                red: wd == 0.00">
+                    <field name="employee_id"/>
+                    <!-- <field name="date_from" />
+                    <field name="date_to" /> -->
+                    <field name="wd" />
+                    <field name="leave" />
+                    <field name="late_leave" />
+                    <field name="late_big" />
+                    <field name="late_small" />
+                    <field name="late_half" />
+                    <field name="absent" />
+                    <field name="df_ot" />
+                    <field name="n_ot" />
+                    <field name="od" />
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_payslip_checking_filter" model="ir.ui.view">
+            <field name="name">Payslips Checking Filter</field>
+            <field name="model">hr.payslip.checking</field>
+            <field name="arch" type="xml">
+                <search string="Search Payslip Check">
+                     <group expand="0" string="Group By">
+                        <filter string="Year" icon="terp-personal" domain="[]" context="{'group_by':'date_to:year'}" name="year"/>
+                        <filter string="Month" icon="terp-personal" domain="[]" context="{'group_by':'date_to:month'}" name="month"/>
+                        <filter string="Employee" icon="terp-personal" domain="[]" context="{'group_by':'employee_id'}" name="employee"/>
+                        <filter string="Parent Department" icon="terp-personal" domain="[]" context="{'group_by':'parent_department_id'}" name="parent_department"/>
+                        <filter string="WD 0" icon="terp-personal" 
+                            domain="[('wd','=', 0.00)]"/>
+                        <filter string="Late Leave" icon="terp-personal" 
+                            domain="[('late_big','>=',5)]"/>
+                        <filter string="Absent" icon="terp-personal" 
+                            domain="[('absent','>=',5)]"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_payslip_checking" model="ir.actions.act_window">
+            <field name="name">Payslips Checking</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">hr.payslip.checking</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{
+                    'search_default_year': 1,
+                    'search_default_month': 1,
+                    'search_default_parent_department': 1,
+                }
+            </field>
+            <field name="view_id" ref="view_payslip_checking_tree" />
+        </record>
+
+		<!-- OT Request -->
+        <!-- <record id="action_hr_ot_request_form" model="ir.ui.view">
+            <field name="name">HR OT Request Form</field>
+            <field name="model">hr.ot.request</field>
+            <field name="arch" type="xml">
+                <form string="HR OT Request">
+                <field name="can_reset" invisible="1"/>
+                <field name="can_approve" invisible="1"/>
+                <header>
+                    <button string="Confirm" name="confirm" states="draft" type="workflow" class="oe_highlight"/>
+                    <button string="Approve" name="validate" states="confirm" type="workflow" attrs="{'invisible': [('can_approve', '=', False)]}" groups="base.group_hr_user" class="oe_highlight"/>
+                    <button string="Validate" name="second_validate" states="validate1" type="workflow" groups="base.group_hr_user" class="oe_highlight"/>
+                    <button string="Refuse" name="refuse" states="confirm,validate,validate1" type="workflow" groups="base.group_hr_user"/>
+                    <button string="Reset to Draft" name="reset" type="workflow"
+                            attrs="{'invisible': ['|', ('can_reset', '=', False), ('state', 'not in', ['confirm', 'refuse'])]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,validate" statusbar_colors='{"confirm":"blue","validate1":"blue","refuse":"red"}'/>
+                </header>
+                    <sheet>                     
+                        <group string="OT REQUEST FORM">
+                            <group>
+                                <field name="employee_id" />
+                                <field name="department_id" />
+                                <field name="job_id" />
+                                <field name="date" />
+                                <field name="start_time" />
+                                <field name="end_time" />
+                                <field name="total_hours" />
+                                <field name="reason" />
+                            </group>
+                        </group>                        
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_hr_ot_request_tree" model="ir.ui.view">
+            <field name="name">HR OT Request Tree</field>
+            <field name="model">hr.ot.request</field>
+            <field name="arch" type="xml">
+                <tree string="HR OT Request">
+                    <field name="employee_id" />
+                    <field name="department_id" />
+                    <field name="job_id" />
+                    <field name="date" />
+                    <field name="start_time" />
+                    <field name="end_time" />
+                    <field name="total_hours" />
+                    <field name="reason" />
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_ot_request_filter" model="ir.ui.view">
+            <field name="name">HR OT Request Filter</field>
+            <field name="model">hr.ot.request</field>
+            <field name="arch" type="xml">
+                <search string="Hr OT Request Filter">
+                    <field name="employee_id" string="Employee" />
+                    <group expand="0" string="Group By">
+                        <filter string="Year" icon="terp-personal" domain="[]" context="{'group_by':'date:year'}" name="year"/>
+                        <filter string="Month" icon="terp-personal" domain="[]" context="{'group_by':'date:month'}" name="month"/>
+                        <filter string="Employee" icon="terp-personal" domain="[]" context="{'group_by':'employee_id'}" name="employee"/>
+                        <filter string="Draft" icon="terp-personal" domain="[('state','=','draft')]"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        
+        <record id="action_hr_ot_request_view" model="ir.actions.act_window">
+            <field name="name">HR OT Request</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">hr.ot.request</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{
+                    'search_default_year': 1,
+                    'search_default_month': 1,
+                    'search_default_employee': 1
+                }
+            </field>
+            <field name="view_id" ref="action_hr_ot_request_tree" />
+        </record>
+
+        <menuitem action="action_hr_ot_request_view" id="ot_request_menu"
+            parent="hr_attendance_extension.hr_attendance_menu" name="OT Request" sequence="2" /> -->
+
+        <!-- OT Request -->
+
+        <!-- OD Request -->
+        <!-- <record id="action_hr_od_request_form" model="ir.ui.view">
+            <field name="name">HR OD Request Form</field>
+            <field name="model">hr.od.request</field>
+            <field name="arch" type="xml">
+                <form string="HR OD Request">
+                    <sheet>                     
+                        <group string="OD REQUEST FORM">
+                            <group>
+                                <field name="employee_id" />
+                                <field name="department_id" />
+                                <field name="job_id" />
+                                <field name="date" />
+                                <field name="start_time" />
+                                <field name="end_time" />
+                                <field name="total_hours" />
+                                <field name="reason" />
+                            </group>
+                        </group>                        
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_hr_od_request_tree" model="ir.ui.view">
+            <field name="name">HR OD Request Tree</field>
+            <field name="model">hr.od.request</field>
+            <field name="arch" type="xml">
+                <tree string="HR OD Request">
+                    <field name="employee_id" />
+                    <field name="department_id" />
+                    <field name="job_id" />
+                    <field name="date" />
+                    <field name="start_time" />
+                    <field name="end_time" />
+                    <field name="total_hours" />
+                    <field name="reason" />
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_od_request_filter" model="ir.ui.view">
+            <field name="name">HR OD Request Filter</field>
+            <field name="model">hr.od.request</field>
+            <field name="arch" type="xml">
+                <search string="Hr OD Request Filter">
+                    <field name="employee_id" string="Employee" />
+                </search>
+            </field>
+        </record>
+        
+        <record id="action_hr_od_request_view" model="ir.actions.act_window">
+            <field name="name">HR OD Request</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">hr.od.request</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="action_hr_od_request_tree" />
+        </record>
+
+        <menuitem action="action_hr_od_request_view" id="od_request_menu"
+            parent="hr_attendance_extension.hr_attendance_menu" name="OD Request" sequence="3" /> -->
+
+        <!-- OD Request -->
+
+		<!-- First level menu -->
+		<menuitem id="menu_ot_check" name="Payslips Detail"
+			action="action_ot_check" parent="hr_payroll.menu_hr_root_payroll" sequence="15"/>
+        <menuitem id="menu_payslip_checking" name="Payslips Check"
+            action="action_payslip_checking" parent="hr_payroll.menu_hr_root_payroll" sequence="14"/>
+            
+  </data>
+</openerp>
+      
+      

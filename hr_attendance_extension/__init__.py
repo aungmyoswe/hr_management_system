@@ -1,0 +1,2 @@
+import hr_attendance, attendance_import
+import wizard

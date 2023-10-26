@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <template id="assets_backend" name="custom_css_reses assets" inherit_id="web.assets_backend">
+            <xpath expr="." position="inside">
+                <link rel="stylesheet" href="/hr_duty_roster/static/src/css/cssfile.css"/>
+            </xpath>
+        </template>
+    </data>
+</openerp>
